@@ -3,6 +3,10 @@
 
 #include <AccelStepper.h> 
 
+#define MOTOR_STEPS 200
+#define MICROSTEPS 32
+#define TOTAL_STEPS 6400
+
 #define SPEED 1000 // steps per second
 #define ACCEL 5000 // steps per second per second
 
