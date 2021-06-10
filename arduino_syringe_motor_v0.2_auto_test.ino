@@ -1,9 +1,10 @@
 
-// Syringe Pump motor control rev0.2 06/08/2021  Chon-wa Cheong
+// Syringe Pump motor control rev0.2 06/09/2021  Chon-wa Cheong
 
 // Rev History 
 // Rev0.1 6/1/2021 : Initial code
 // Rev0.2 6/8/2021 : Correct Motor parameter setting 
+// Rev0.2 6/9/2021 : Auto testing version of Rev0.2, added auto testing function 
 
 #include <AccelStepper.h> 
 
