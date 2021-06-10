@@ -4,7 +4,7 @@
 // Rev History 
 // Rev0.1 6/1/2021 : Initial code
 // Rev0.2 6/8/2021 : Correct Motor parameter setting 
-// Rev0.3 6/10/2021 : Correct some syntax and make it simple with reducing condition branch. 
+// Rev0.2 6/10/2021 : Correct some syntax and make it simple with reducing condition branch. 
 
 #include <AccelStepper.h> 
 
