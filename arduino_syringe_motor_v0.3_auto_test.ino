@@ -10,7 +10,7 @@
 
 #define X_SPEED 64      // X steps pull position 
 #define X_DOUBLE 158    // X steps push position 
-#define X_ACCEL 8         // no meaning 
+#define X_ACCEL 8       // no meaning 
 
 #define EN        8    
 
@@ -31,7 +31,7 @@ char x;
 
 
 void setup() {
-  pinMode (0, INPUT); 
+  pinMode (3, INPUT); 
   pinMode (8, OUTPUT); 
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(500);   //max speed steps per second settiing 
@@ -54,13 +54,11 @@ void loop() {
    // stepper.enableOutputs(); 
    // stepper.disableOutputs();
 
-   val = digitalRead(0);  
+      val = digitalRead(3); 
    
-   if (val == HIGH) {
-    
-   x = 'Y' ;
+    if (val == HIGH && k < 100 ) {
 
-     // if (x == 'Y' && k == 0 ) {
+     // if (x == 'Y' && k == 0) {
      // i = stepper.currentPosition(); 
      // stepper.moveTo(X_SPEED + i );  // set target position + current position
      // while (stepper.currentPosition() != (i + X_SPEED)) // Full speed up to 200 + current position 
@@ -77,35 +75,33 @@ void loop() {
      // k++ ; 
      // }
      
-     if ( x == 'Y' && k < 100  ){
-
         digitalWrite(8, LOW); 
     i = stepper.currentPosition(); 
       	stepper.moveTo(X_DOUBLE + i );  // set target position + current position
         while (stepper.currentPosition() != (i + X_DOUBLE )) // Full speed up to 400 + current position
       	stepper.run();
         stepper.stop();
-     	delay(500);
+      	delay(500);
         
-     j = stepper.currentPosition();
-     stepper.moveTo( j - X_SPEED ); // set new target position
-     while (stepper.currentPosition() != j - X_SPEED ) // Full speed back  
-   	 stepper.run();
-     stepper.stop();
-     delay(500);
-     k++;
+    j = stepper.currentPosition();
+        stepper.moveTo( j - X_SPEED ); // set new target position
+        while (stepper.currentPosition() != j - X_SPEED ) // Full speed back  
+   	    stepper.run();
+        stepper.stop();
+        delay(500);
+        k++;
      }
      
      // Serial.println("water provided 2nd time, Nose Poke touch again? Y/N? \n");
        
       else {
         digitalWrite(8, HIGH);
-        Serial.println ("This work is done 100 times");
+     // Serial.println (val);
         
       }
 
-   }
-      
+    }
+ 
     //else if ( x == 'N' ) {
     //  Serial.println("system stops and move back to initial position \n"); 
     //  k = 0;
@@ -117,6 +113,6 @@ void loop() {
     // Serial.println ("back to original position \n");
     //  }
     
-   }
+
   
   
