@@ -56,7 +56,7 @@ void loop() {
 
       val = digitalRead(3); 
    
-    if (val == HIGH && k < 100 ) {
+    if (val == LOW && k < 100 ) {
 
      // if (x == 'Y' && k == 0) {
      // i = stepper.currentPosition(); 
