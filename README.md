@@ -15,7 +15,13 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 | Phase2   | False            | False       | False           | 0        | 0       | 0            | ∞                 |
 | Phase3   | False            | True        | False           | 0        | 0       | 0            | ∞                 |
 | Phase4   | False            | True        | False           | 0        | 0       | 0            | ∞                 |
-| Phase5/6 | False            | True        | True            | 5        | 5       | 5            | 30/15/10/7/5/3/1  |
+| Phase5-1 | False            | True        | True            | 5        | 5       | 5            | 30  |
+| Phase5-2 | False            | True        | True            | 5        | 5       | 5            | 15  |
+| Phase5-3 | False            | True        | True            | 5        | 5       | 5            | 10  |
+| Phase5-4 | False            | True        | True            | 5        | 5       | 5            | 7  |
+| Phase5-5 | False            | True        | True            | 5        | 5       | 5            | 5  |
+| Phase5-6 | False            | True        | True            | 5        | 5       | 5            | 3  |
+| Phase6 | False            | True        | True            | 5        | 5       | 5            | 1  |
 
 | trial | x     |
 |-------|-------|
