@@ -9,7 +9,7 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 ![3CSRTT](./docs/3CSRTT.svg "Overview")
 
 
-| Phase    | is_nosepoke_skip | is_lickwait | is_perservative | waittime | Timeout | limited hold | stimulus duration |
+| Phase    | is_nosepoke_skip | is_lickwait | is_perservative | waittime_in_s | timeout_in_s | limited_hold_in_s | stimulus duration_in_s |
 |----------|------------------|-------------|-----------------|----------|---------|--------------|-------------------|
 | Phase1   | True             | False       | False           | 20       | 0       | 0            | 0                 |
 | Phase2   | False            | False       | False           | 0        | 0       | 0            | ∞                 |
