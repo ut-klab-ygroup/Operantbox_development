@@ -1,6 +1,7 @@
 # 目的
 Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御する
 
+* [Rusberry Pi spce](./docs/rasberrypi.md)
 # Overview
 ![Overview](./docs/overview.svg "Overview")
 
@@ -47,3 +48,5 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 ### Phase5/6
 成績に関わらず規定トライアル数で移行？
 
+# Communication
+[](./docs/communication.svg)
