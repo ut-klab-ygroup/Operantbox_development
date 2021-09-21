@@ -49,4 +49,4 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 成績に関わらず規定トライアル数で移行？
 
 # Communication
-[](./docs/communication.svg)
+![](./docs/communication.svg)
