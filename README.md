@@ -1,7 +1,7 @@
 # 目的
 Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御する
 
-* [Rusberry Pi spce](./docs/rasberrypi.md)
+* [Rusberry Pi spec](./docs/rasberrypi.md)
 # Overview
 ![Overview](./docs/overview.svg "Overview")
 

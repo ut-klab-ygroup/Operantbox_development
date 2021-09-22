@@ -32,13 +32,13 @@ https://www.raspberrypi.org/products/raspberry-pi-4-model-b/
 
 
 
-# Hardware related Interface 
+## Hardware related Interface 
 
-## Related HW Documentation
+### Related HW Documentation
 https://www.raspberrypi.org/documentation/computers/raspberry-pi.html
 https://datasheets.raspberrypi.org/rpi4/raspberry-pi-4-datasheet.pdf
 
-## HW IOインタフェース仕様（IO電圧 3.3V）：
+### HW IOインタフェース仕様（IO電圧 3.3V）：
 汎用IO(GPIO)はRaspberry Piの40ピンのピンヘッダーに接続されており、使用可能だが、
 GPIOは他の機能にもマッピングされて使用されているので、主に、下記の15本の汎用IOピンが使用可能
 ![](2021-09-21-22-44-18.png)
@@ -57,10 +57,21 @@ GPIOは他の機能にもマッピングされて使用されているので、�
 * GPIO２４（Gen5）
 * GPIO２５（Gen6）
 * GPIO２６
+### 汎用IOのAC/DC特性
+![](2021-09-21-22-45-54.png)
+
+### 汎用IOの各ピンのDefaultのPull State
+
+![](2021-09-21-22-46-21.png)
 
 
-# 汎用IOの使用配置（暫定仕様　変更可能性あり） 
+# 利用時の仕様
+##
+* OS: TODO
+* Python: 3.8 ?
+* Web server: TODO
 
+## 汎用IOの使用配置（暫定） 
 * 入力信号：7本
 * 出力信号：8本
 * GND 信号: 1本
@@ -81,12 +92,6 @@ GPIOは他の機能にもマッピングされて使用されているので、�
 * GPIO２３（Gen4） 	(Input) Nose Poke Sensor 4
 * GPIO２５（Gen6） 	(Input) Lick Sensor 
 * GPIO２６             	(Input) Food Sensor
-## 汎用IOのAC/DC特性
-![](2021-09-21-22-45-54.png)
-
-## 汎用IOの各ピンのDefaultのPull State
-
-![](2021-09-21-22-46-21.png)
 
 
 
