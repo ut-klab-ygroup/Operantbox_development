@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="JG-szfgva_qsBJfLhbkO" name="Phase1/2/3/4/5/6">
-        <mxGraphModel dx="1968" dy="1243" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="none" math="0" shadow="0">
+        <mxGraphModel dx="1116" dy="1668" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1654" pageHeight="1169" background="none" math="0" shadow="0">
             <root>
                 <mxCell id="IrLWcrQQSIPQ6W97ejEB-0"/>
                 <mxCell id="IrLWcrQQSIPQ6W97ejEB-1" parent="IrLWcrQQSIPQ6W97ejEB-0"/>
@@ -39,8 +39,8 @@
                 <mxCell id="iCkNAlsy7gJNcpnjkfH3-59" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;strokeColor=#000000;" parent="8wdTrqi6ul5k7i0J_g9q-0" source="iCkNAlsy7gJNcpnjkfH3-21" target="8wdTrqi6ul5k7i0J_g9q-15" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="iCkNAlsy7gJNcpnjkfH3-21" value="Timer &lt;br&gt;[stimulus duration (s)]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="8wdTrqi6ul5k7i0J_g9q-0" vertex="1">
-                    <mxGeometry x="413.5" y="168" width="147" height="40" as="geometry"/>
+                <mxCell id="iCkNAlsy7gJNcpnjkfH3-21" value="Timer &lt;br&gt;[stimulus_duration_in_s]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="8wdTrqi6ul5k7i0J_g9q-0" vertex="1">
+                    <mxGeometry x="400" y="168" width="160.5" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="uwbvZCjAcktgsxW0GK_K-0" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;verdana&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;x= 2, 3, 4, 5, 6&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" parent="8wdTrqi6ul5k7i0J_g9q-0" vertex="1">
                     <mxGeometry x="300" y="70" width="130" height="30" as="geometry"/>
@@ -56,7 +56,7 @@
                         <mxPoint x="622" y="307" as="targetPoint"/>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="iCkNAlsy7gJNcpnjkfH3-60" value="Timer &lt;br&gt;[Limited hold (s)]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="8wdTrqi6ul5k7i0J_g9q-0" vertex="1">
+                <mxCell id="iCkNAlsy7gJNcpnjkfH3-60" value="Timer &lt;br&gt;[limited_hold_in_s]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="8wdTrqi6ul5k7i0J_g9q-0" vertex="1">
                     <mxGeometry x="413.5" y="286.75" width="147" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="tz8AyIwEjNFQkuX5hdMo-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="8wdTrqi6ul5k7i0J_g9q-0" source="iCkNAlsy7gJNcpnjkfH3-64" target="iCkNAlsy7gJNcpnjkfH3-68" edge="1">
@@ -176,7 +176,7 @@
                 <mxCell id="iCkNAlsy7gJNcpnjkfH3-14" value="Houselight off" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="iCkNAlsy7gJNcpnjkfH3-10" vertex="1">
                     <mxGeometry x="60" y="47.5" width="120" height="40" as="geometry"/>
                 </mxCell>
-                <mxCell id="iCkNAlsy7gJNcpnjkfH3-15" value="Timer &lt;br&gt;[waittime(s]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="iCkNAlsy7gJNcpnjkfH3-10" vertex="1">
+                <mxCell id="iCkNAlsy7gJNcpnjkfH3-15" value="Timer &lt;br&gt;[waittime_in_s]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="iCkNAlsy7gJNcpnjkfH3-10" vertex="1">
                     <mxGeometry x="60" y="110" width="120" height="40" as="geometry"/>
                 </mxCell>
                 <mxCell id="iCkNAlsy7gJNcpnjkfH3-16" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="iCkNAlsy7gJNcpnjkfH3-10" source="iCkNAlsy7gJNcpnjkfH3-14" target="iCkNAlsy7gJNcpnjkfH3-15" edge="1">
@@ -201,8 +201,8 @@
                         </Array>
                     </mxGeometry>
                 </mxCell>
-                <mxCell id="iCkNAlsy7gJNcpnjkfH3-24" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;verdana&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;session単位のパラメータ&lt;br&gt;is_nosepoke_skip(Tru or False)&lt;br&gt;is_lickwait (True or False)&lt;br&gt;is_perservative (True or False)&lt;br&gt;Waittime (0 or 5)&lt;br&gt;Timeout (0 or 5)&lt;br&gt;Limited hold (5)&lt;br&gt;Stimulus duration&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" parent="IrLWcrQQSIPQ6W97ejEB-1" vertex="1">
-                    <mxGeometry x="10" y="50" width="310" height="130" as="geometry"/>
+                <mxCell id="iCkNAlsy7gJNcpnjkfH3-24" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;verdana&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;session単位のパラメータ&lt;br&gt;is_nosepoke_skip(Tru or False)&lt;br&gt;is_lickwait (True or False)&lt;br&gt;is_perservative (True or False)&lt;br&gt;wait_time_in_s (0 or 5)&lt;br&gt;timeout_in_s(0 or 5)&lt;br&gt;limited_hold_in_s (5)&lt;br&gt;stimulus_duration_in_s&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" parent="IrLWcrQQSIPQ6W97ejEB-1" vertex="1">
+                    <mxGeometry x="10" y="50" width="220" height="130" as="geometry"/>
                 </mxCell>
                 <mxCell id="iCkNAlsy7gJNcpnjkfH3-25" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;verdana&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;trial単位のパラメータ&lt;br&gt;x&amp;nbsp;&lt;br&gt;&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" parent="IrLWcrQQSIPQ6W97ejEB-1" vertex="1">
                     <mxGeometry x="20" y="200" width="260" height="30" as="geometry"/>
@@ -446,7 +446,7 @@
                 <mxCell id="d0WjXQXTS84HNOMwNvaV-6" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="r4njhYBlZnN6IFq0I3OJ-5" source="r4njhYBlZnN6IFq0I3OJ-11" target="d0WjXQXTS84HNOMwNvaV-5" edge="1">
                     <mxGeometry relative="1" as="geometry"/>
                 </mxCell>
-                <mxCell id="r4njhYBlZnN6IFq0I3OJ-11" value="Timer&lt;br&gt;[Timeout(s)]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="r4njhYBlZnN6IFq0I3OJ-5" vertex="1">
+                <mxCell id="r4njhYBlZnN6IFq0I3OJ-11" value="Timer&lt;br&gt;[timeout_in_s]" style="rounded=1;whiteSpace=wrap;html=1;arcSize=24;fillColor=#ffffc0;strokeColor=#ff0000;shadow=0;comic=0;labelBackgroundColor=none;fontFamily=Verdana;fontSize=12;fontColor=#000000;align=center;" parent="r4njhYBlZnN6IFq0I3OJ-5" vertex="1">
                     <mxGeometry x="230" y="65" width="120" height="60" as="geometry"/>
                 </mxCell>
                 <mxCell id="d0WjXQXTS84HNOMwNvaV-7" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" parent="r4njhYBlZnN6IFq0I3OJ-5" source="d0WjXQXTS84HNOMwNvaV-5" target="r4njhYBlZnN6IFq0I3OJ-8" edge="1">
