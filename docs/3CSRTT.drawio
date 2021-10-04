@@ -461,6 +461,9 @@
                         <mxPoint x="1017.5" y="645" as="sourcePoint"/>
                     </mxGeometry>
                 </mxCell>
+                <mxCell id="5" value="&lt;span style=&quot;color: rgb(0 , 0 , 0) ; font-family: &amp;#34;verdana&amp;#34; ; font-size: 12px ; font-style: normal ; font-weight: 400 ; letter-spacing: normal ; text-align: center ; text-indent: 0px ; text-transform: none ; word-spacing: 0px ; background-color: rgb(248 , 249 , 250) ; display: inline ; float: none&quot;&gt;プログラム開始時はLick wait stateから開始&lt;br&gt;&lt;/span&gt;" style="text;whiteSpace=wrap;html=1;" vertex="1" parent="IrLWcrQQSIPQ6W97ejEB-1">
+                    <mxGeometry x="20" y="270" width="260" height="30" as="geometry"/>
+                </mxCell>
             </root>
         </mxGraphModel>
     </diagram>
