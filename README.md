@@ -7,6 +7,13 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 
 
 # 3CSRTT
+## パラメータに関する説明：
+ m : Nose Poke物理ポート番号を指定し、それぞれのNose Poke Wait [m] Stateを定義し、トータル５つのNose Poke Wait [m]のStateが平行して動作している。  
+ x : Nose Pokeの正解ポート番号を指定する。設定ファイルを設け、それぞれのTrialに対して、xを指定し、正解ポートを定義する。  
+ m : マウスが実際にNose Pokeしたセンサーの番号を出力する。  
+
+注：xパラメータを指定する設定ファイルが各Trialに対してTrial Entryをユーザーが設定する仕様。TrialがEntryの最後に到達した後、最初のEntryに戻り、ユーザーが停止するまで、Trialが繰り返される仕様
+  
 ![3CSRTT](./docs/3CSRTT.svg "Overview")
 
 
