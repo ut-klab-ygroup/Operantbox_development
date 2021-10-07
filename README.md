@@ -31,6 +31,12 @@ Raspberry PiとArduinoを組み合わせてstandaloneで行動実験系を制御
 | Phase5-6 | False            | True        | True            | 5        | 5       | 5            | 3  |
 | Phase6 | False            | True        | True            | 5        | 5       | 5            | 1  |
 
+### 各Trialに対するパラメータｘの設定を指定する設定ファイル
+ユーザーが各Trialそれぞれに対してパラメータxを設定する仕様となっており、下記はExampleで６entriesを示している。
+ユーザーが停止するまで、SWが設定ファイルで示したTrialのEntryの処理を行い、最後のEntryに到達した場合、最初の
+Entryに戻り、繰り返される仕様となっている。
+
+
 | trial | x     |
 |-------|-------|
 | 1     | 3&4&5 |
