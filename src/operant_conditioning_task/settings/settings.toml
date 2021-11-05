@@ -1,0 +1,137 @@
+# operant_conditioning_task プログラムの設定
+
+# 設定フェーズの順番を名前で示したリストです。
+phase_list = ["phase1", "phase2", "phase3", "phase4", "phase5_1", "phase5_2", "phase5_3", "phase5_4", "phase5_5", "phase5_6", "phase6"]
+
+# 開始設定フェーズの名前です。
+current_phase = "phase1"
+
+# 正解の nose poke ターゲットの番号です。
+# 番号リストのリスト形式です。
+# この順番で繰り返し各試行に適用されます。
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
+
+# 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
+num_trials_before = 10
+
+# 設定フェーズ phase1 の更新判定の評価に用いるキューの呈示から lick 行動までの反応時間のクリア値 (sec) です。
+response_time_threshold = 10
+
+# 設定フェーズ phase1 の更新判定の評価に用いるキューの呈示から lick 行動までの反応時間をクリアした試行の割合です。
+rate_threshold = 0.5
+
+# 設定フェーズ phase 5 と phase 6 の更新判定の評価に用いる試行数のクリア値です。
+trial_threshold_list = [100, 200, 300, 400, 500, 600]
+
+# ===== 設定フェーズの設定パラメーター =====
+#
+# 以下で、各設定フェーズの設定パラメーターを指定します。
+
+# For debug
+#[phase1]
+#is_nose_poke_skip = false
+#is_lick_wait = true
+#is_perservative = true
+#wait_time_in_s = 5
+#timeout_in_s = 5
+#limited_hold_in_s = 5
+#stimulus_duration_in_s = 5
+
+[phase1]
+is_nose_poke_skip = true
+is_lick_wait = false
+is_perservative = false
+wait_time_in_s = 20
+timeout_in_s = 0
+limited_hold_in_s = 0
+stimulus_duration_in_s = 0
+
+[phase2]
+is_nose_poke_skip = false
+is_lick_wait = false
+is_perservative = false
+wait_time_in_s = 0
+timeout_in_s = 0
+limited_hold_in_s = 0
+stimulus_duration_in_s = -1
+
+[phase3]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = false
+wait_time_in_s = 0
+timeout_in_s = 0
+limited_hold_in_s = 0
+stimulus_duration_in_s = -1
+
+[phase4]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = false
+wait_time_in_s = 0
+timeout_in_s = 0
+limited_hold_in_s = 0
+stimulus_duration_in_s = -1
+
+[phase5_1]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 30
+
+[phase5_2]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 15
+
+[phase5_3]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 10
+
+[phase5_4]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 7
+
+[phase5_5]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 5
+
+[phase5_6]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 3
+
+[phase6]
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
+timeout_in_s = 5
+limited_hold_in_s = 5
+stimulus_duration_in_s = 1
