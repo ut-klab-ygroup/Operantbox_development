@@ -15,10 +15,10 @@ from settings.settings import Settings
 from state_machine.task_results import TaskResults
 from state_machine.operant_conditioning_model import OperantConditioningModel
 import utility
-from utility import OperantConditioningError
+from utility import OperantConditioningError, OperantConditioningSettingError
 
 PROGRAM_NAME = 'operant_conditioning_task'
-PROGRAM_VERSION = '211101'
+PROGRAM_VERSION = '211105'
 
 
 # マウスのオペラント条件付け行動課題実験を行う operant_conditioning_task プログラムを開始します。
@@ -53,6 +53,9 @@ def main():
     except KeyboardInterrupt:
         logger.info('Program: Stopped.')
         sys.exit(0)
+    except OperantConditioningSettingError as exception:
+        print(f'The following error occurred in the settings.\n{exception}')
+        sys.exit(1)
     except OperantConditioningError as exception:
         logger.error(f'Program: The following error occurred.\n{exception}')
         sys.exit(1)

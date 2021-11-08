@@ -34,13 +34,13 @@ class OperantConditioningModel:
         self.name = name
 
         # プログラム全体の設定です。
-        self.settings = settings
+        self._settings = settings
 
         # 行動課題実験の結果データを保持するオブジェクトです。
-        self.task_results = task_results
+        self._task_results = task_results
 
         # ログ出力を行うオブジェクトです。
-        self.logger = logger
+        self._logger = logger
 
         # ステート マシンの各状態を処理するオブジェクトを生成します。
         # 状態オブジェクトは、transitions ライブラリの State クラスの派生クラスから生成されます。
@@ -81,12 +81,12 @@ class OperantConditioningModel:
     def start_trial(self, event):
         # 実験開始時刻を記録します。
         if event.transition.source == 'InitialState':
-            self.task_results.start_time = time.time()
-            self.logger.info(f'Experiment: "{self.name}" started.')
+            self._task_results.start_time = time.time()
+            self._logger.info(f'Experiment: "{self.name}" started.')
 
         # 次の試行のための設定を行います。
-        settings_phase_name = self.settings.set_for_next_trial(self.task_results)
-        self.logger.info(f'Trial#{self.settings.current_trial_num}: Started., Setting phase: {settings_phase_name}')
+        settings_phase_name = self._settings.set_for_next_trial(self._task_results)
+        self._logger.info(f'Trial#{self._settings.current_trial_num}: Started., Setting phase: {settings_phase_name}')
 
         # 次の状態に遷移します。
         self.trigger('StartTrial')
@@ -106,11 +106,11 @@ class OperantConditioningModel:
             # Lick 行動の結果を記録します。
             try:
                 response_time = results['lick_time'] - results['light_on_time']
-                self.task_results.store_lick_results(results['lick_time'], self.settings.current_trial_num,
+                self._task_results.store_lick_results(results['lick_time'], self._settings.current_trial_num,
                                                      'LickState', response_time)
             except Exception as exception:
-                if not self.settings.debug['skip_state']:
-                    self.logger.error('Lick results cannot be obtained properly.')
+                if not self._settings.debug['skip_state']:
+                    self._logger.error('Lick results cannot be obtained properly.')
 
             self.trigger('LickState->DelayState')
         elif results['state_result'] == TaskResult.Failure:
@@ -152,13 +152,13 @@ class OperantConditioningModel:
         if results['state_result'] in [TaskResult.Success, TaskResult.Failure]:
             # Nose poke 行動の結果を記録します。
             try:
-                self.task_results.store_nose_poke_results(results['nose_poke_time'],
-                                                          self.settings.current_trial_num,
+                self._task_results.store_nose_poke_results(results['nose_poke_time'],
+                                                           self._settings.current_trial_num,
                                                           'NosePokeState', results['target_num'],
-                                                          results['is_correct'])
+                                                           results['is_correct'])
             except Exception as exception:
-                if not self.settings.debug['skip_state']:
-                    self.logger.error('Lick results cannot be obtained properly.')
+                if not self._settings.debug['skip_state']:
+                    self._logger.error('Lick results cannot be obtained properly.')
 
             if results['state_result'] == TaskResult.Success:
                 self.trigger('NosePokeState->RewardState')
@@ -173,22 +173,22 @@ class OperantConditioningModel:
 
     # 次の試行に移ります。
     def go_to_next_trial(self, event):
-        self.logger.info(f'Trial#{self.settings.current_trial_num}: Finished.')
+        self._logger.info(f'Trial#{self._settings.current_trial_num}: Finished.')
 
         # 実験の停止要求があった場合は次の試行に移らず、実験を終了します。
-        if self.settings.cancel_flag:
+        if self._settings.cancel_flag:
             self.finalize_experiment()
             return
         # 試行回数が指定されており、かつその試行回数に到達した場合は、実験を終了します。
-        elif self.settings.num_trials_per_experiment != -1 and \
-                self.settings.current_trial_num >= self.settings.num_trials_per_experiment:
+        elif self._settings.num_trials_per_experiment != -1 and \
+                self._settings.current_trial_num >= self._settings.num_trials_per_experiment:
             self.finalize_experiment()
             return
 
         # 実験開始からの総試行数を 1 つ増やします。
-        self.task_results.increment_total_trials()
+        self._task_results.increment_total_trials()
 
-        if self.settings.debug['skip_state']:
+        if self._settings.debug['skip_state']:
             time.sleep(2)
 
         # 次の状態に遷移します。
@@ -196,7 +196,7 @@ class OperantConditioningModel:
 
     # 実験終了時の処理を行います。
     def finalize_experiment(self):
-        self.logger.info('Experiment: Finished.')
+        self._logger.info('Experiment: Finished.')
 
     # 状態クラスの単体テスト用の after コールバックです。
     def after_callback_for_test(self, event):
@@ -205,7 +205,7 @@ class OperantConditioningModel:
             print('Results:', results)
         except:
             pass
-        self.logger.info('Unit state test: After callback finished.')
+        self._logger.info('Unit state test: After callback finished.')
 
 
 # ===== テスト =====
@@ -217,6 +217,7 @@ def test_state_machine_skeleton():
     from settings.settings import Settings
     from state_machine.task_results import TaskResults
     from utility import create_logger
+    from utility import OperantConditioningSettingError
 
     try:
         # 設定ファイルを読み込み、設定オブジェクトを生成します。
@@ -247,6 +248,9 @@ def test_state_machine_skeleton():
     except KeyboardInterrupt:
         logger.info('Skeleton test: Stopped.')
         sys.exit(0)
+    except OperantConditioningSettingError as exception:
+        print(f'The following error occurred in the settings.\n{exception}')
+        sys.exit(1)
     except OperantConditioningError as exception:
         logger.info(f'Skeleton test: The following OperantConditioningError occurred.\n{exception}')
         sys.exit(1)
@@ -265,6 +269,7 @@ def test_unit_state(tested_state_name):
     from state_machine.task_results import TaskResults
     from gpio.task_gpio import TaskGpio
     from utility import create_logger
+    from utility import OperantConditioningSettingError
 
     try:
         # 設定ファイルを読み込み、設定オブジェクトを生成します。
@@ -292,6 +297,9 @@ def test_unit_state(tested_state_name):
     except KeyboardInterrupt:
         logger.info('Unit state test: Stopped.')
         sys.exit(0)
+    except OperantConditioningSettingError as exception:
+        print(f'The following error occurred in the settings.\n{exception}')
+        sys.exit(1)
     except OperantConditioningError as exception:
         logger.info(f'Unit state test: The following OperantConditioningError occurred.\n{exception}')
         sys.exit(1)
@@ -303,12 +311,12 @@ def test_unit_state(tested_state_name):
 
 
 # ステート マシンのテスト
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     # 状態クラスの名前を指定して、単一の状態クラスをテスト実行します。
     unit_state_test = True
     if unit_state_test:
-        test_unit_state('DelayState')
+        test_unit_state('TimeoutState')
     # ステート マシンのスケルトンをテスト実行します。
     else:
         test_state_machine_skeleton()

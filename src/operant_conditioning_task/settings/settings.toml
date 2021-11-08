@@ -6,11 +6,6 @@ phase_list = ["phase1", "phase2", "phase3", "phase4", "phase5_1", "phase5_2", "p
 # 開始設定フェーズの名前です。
 current_phase = "phase1"
 
-# 正解の nose poke ターゲットの番号です。
-# 番号リストのリスト形式です。
-# この順番で繰り返し各試行に適用されます。
-x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
-
 # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
 num_trials_before = 10
 
@@ -26,18 +21,13 @@ trial_threshold_list = [100, 200, 300, 400, 500, 600]
 # ===== 設定フェーズの設定パラメーター =====
 #
 # 以下で、各設定フェーズの設定パラメーターを指定します。
-
-# For debug
-#[phase1]
-#is_nose_poke_skip = false
-#is_lick_wait = true
-#is_perservative = true
-#wait_time_in_s = 5
-#timeout_in_s = 5
-#limited_hold_in_s = 5
-#stimulus_duration_in_s = 5
+# stimulus_duration_in_s: -1 の場合、時間無制限です。
+# x: 正解の nose poke ターゲットの番号です。
+#   番号リストのリスト形式です。
+#   この順番で繰り返し各試行に適用されます。
 
 [phase1]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = true
 is_lick_wait = false
 is_perservative = false
@@ -47,6 +37,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = 0
 
 [phase2]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = false
 is_perservative = false
@@ -56,6 +47,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = -1
 
 [phase3]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = false
@@ -65,6 +57,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = -1
 
 [phase4]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = false
@@ -74,6 +67,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = -1
 
 [phase5_1]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -83,6 +77,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 30
 
 [phase5_2]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -92,6 +87,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 15
 
 [phase5_3]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -101,6 +97,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 10
 
 [phase5_4]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -110,6 +107,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 7
 
 [phase5_5]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -119,6 +117,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 5
 
 [phase5_6]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true
@@ -128,6 +127,7 @@ limited_hold_in_s = 5
 stimulus_duration_in_s = 3
 
 [phase6]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = true
 is_perservative = true

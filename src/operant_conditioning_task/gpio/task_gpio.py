@@ -19,32 +19,32 @@ class TaskGpio:
     def __init__(self, pin_assignment, logger):
 
         # デジタル入出力を行うオブジェクトを生成します。
-        self.chamber_light = LED(pin_assignment['chamber_light'])
-        self.lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05)
-        self.nose_poke_leds = LEDBoard(*pin_assignment['nose_poke_leds'])
-        self.nose_poke_pin_assignment = np.array(pin_assignment['nose_poke_sensors'])
-        self.nose_poke_sensors = []
+        self._chamber_light = LED(pin_assignment['chamber_light'])
+        self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05)
+        self._nose_poke_leds = LEDBoard(*pin_assignment['nose_poke_leds'])
+        self._nose_poke_pin_assignment = np.array(pin_assignment['nose_poke_sensors'])
+        self._nose_poke_sensors = []
         for i in range(len(pin_assignment['nose_poke_sensors'])):
-           self.nose_poke_sensors.append(Button(pin_assignment['nose_poke_sensors'][i],
-                                                hold_time=0.5, bounce_time=0.05))
-        self.reward_led = LED(pin_assignment['reward_led'])
-        self.reward_buzzer = LED(pin_assignment['reward_buzzer'])
-        self.reward_pump = LED(pin_assignment['reward_pump'])
+           self._nose_poke_sensors.append(Button(pin_assignment['nose_poke_sensors'][i],
+                                                 hold_time=0.5, bounce_time=0.05))
+        self._reward_led = LED(pin_assignment['reward_led'])
+        self._reward_buzzer = LED(pin_assignment['reward_buzzer'])
+        self._reward_pump = LED(pin_assignment['reward_pump'])
 
         # ログ出力を行うオブジェクトです。
-        self.logger = logger
+        self._logger = logger
 
         # 現在の状態の名前です。
-        self.state_name = ''
+        self._state_name = ''
         
         # Lick 行動の結果です。
         self.is_licked = False
-        self.lick_time = -1
+        self._lick_time = -1
         
         # Nose poke 行動の結果です。
         self.is_nose_poked = False
-        self.nose_poke_time = -1
-        self.nose_poke_selected_index = -1
+        self._nose_poke_time = -1
+        self._nose_poke_selected_index = -1
         
         # Lick 行動と nose poke 行動の検出を開始します。
         self._detect_lick()
@@ -52,18 +52,18 @@ class TaskGpio:
 
     # 現在の状態を再設定します。
     def reset_state(self, state_name):
-        self.state_name = state_name
+        self._state_name = state_name
         self.is_licked = False
-        self.lick_time = -1
+        self._lick_time = -1
         self.is_nose_poked = False
-        self.nose_poke_time = -1
-        self.nose_poke_selected_index = -1
+        self._nose_poke_time = -1
+        self._nose_poke_selected_index = -1
 
     # LED クラスを用いて、デバイスのスイッチング ('ON' と 'OFF') と点滅 ('Blink') を行います。
     def _switch_single_device(self, device, status, log=None):
         
         if log is not None:
-            self.logger.debug(log)
+            self._logger.debug(log)
             
         status = status.lower()
         if status == 'on':
@@ -80,7 +80,7 @@ class TaskGpio:
     def _trigger_single_device(self, device, log=None):
 
         if log is not None:
-            self.logger.debug(log)
+            self._logger.debug(log)
 
         device.on()
         time.sleep(0.1)
@@ -88,12 +88,12 @@ class TaskGpio:
 
     # チャンバーの照明の点灯 ('ON')、消灯 ('OFF') あるいは点滅 ('Blink') を行います。
     def switch_chamber_light(self, status):
-        log = self.state_name + ': Light ' + status.lower() + '.'
-        self._switch_single_device(self.chamber_light, status, log)
+        log = self._state_name + ': Light ' + status.lower() + '.'
+        self._switch_single_device(self._chamber_light, status, log)
 
     # Lick 行動の結果を results オブジェクトに格納します。
     def get_lick_results(self, results):
-        results['lick_time'] = self.lick_time
+        results['lick_time'] = self._lick_time
 
     # Lick 行動を検出します。
     def _detect_lick(self):
@@ -102,10 +102,10 @@ class TaskGpio:
         def _lick_callback():
             if not self.is_licked:
                 self.is_licked = True
-                self.lick_time = time.time()
-                self.logger.info(self.state_name + ': Licked.')
+                self._lick_time = time.time()
+                self._logger.info(self._state_name + ': Licked.')
             
-        self.lick_sensor.when_pressed = _lick_callback
+        self._lick_sensor.when_pressed = _lick_callback
 
     # target_index_list で指定したインデックスに対応する nose poke ターゲットの
     # LED の点灯 ('ON') あるいは消灯 ('OFF') を行います。
@@ -113,23 +113,23 @@ class TaskGpio:
     def switch_nose_poke_leds(self, status, target_index_list = None):
         status = status.lower()
         if target_index_list is None:
-            target_index_list = range(len(self.nose_poke_leds))
+            target_index_list = range(len(self._nose_poke_leds))
             
         if status == 'on':
             for target_index in target_index_list:
-                self.nose_poke_leds[target_index].on()
-            self.logger.debug(self.state_name + ': Nose poke LED on.')
+                self._nose_poke_leds[target_index].on()
+            self._logger.debug(self._state_name + ': Nose poke LED on.')
         elif status == 'off':
             for target_index in target_index_list:
-                self.nose_poke_leds[target_index].off()
-            self.logger.debug(self.state_name + ': Nose poke LED off.')
+                self._nose_poke_leds[target_index].off()
+            self._logger.debug(self._state_name + ': Nose poke LED off.')
         else:
             pass
 
     # Nose poke 行動の結果を results オブジェクトに格納します。
     def get_nose_poke_results(self, results):
-        results['nose_poke_time'] = self.nose_poke_time
-        results['selected_index'] = self.nose_poke_selected_index
+        results['nose_poke_time'] = self._nose_poke_time
+        results['selected_index'] = self._nose_poke_selected_index
 
     # Nose poke 行動を検出します。
     def _detect_nose_poke(self):
@@ -138,33 +138,33 @@ class TaskGpio:
         def _nose_poke_callback(sensor):
             if not self.is_nose_poked:
                 self.is_nose_poked = True
-                self.nose_poke_time = time.time()
+                self._nose_poke_time = time.time()
                 pin_name = str(sensor.pin)
                 pin_num = int(pin_name.replace('GPIO', ''))
-                selected_index = np.where(pin_num == self.nose_poke_pin_assignment)
+                selected_index = np.where(pin_num == self._nose_poke_pin_assignment)
                 if selected_index[0].size > 0:
-                    self.nose_poke_selected_index = selected_index[0][0]
-                self.logger.info(self.state_name + ': Nose-poked.')
+                    self._nose_poke_selected_index = selected_index[0][0]
+                self._logger.info(self._state_name + ': Nose-poked.')
 
         # Nose poke の各ターゲットについて、コールバックを設定します。
-        for sensor in self.nose_poke_sensors:
+        for sensor in self._nose_poke_sensors:
             sensor.when_pressed = _nose_poke_callback
 
     # 報酬用 LED の点灯 ('ON') あるいは消灯 ('OFF') を行います。
     def switch_reward_led(self, status):
-        self._switch_single_device(self.reward_led, status)
+        self._switch_single_device(self._reward_led, status)
 
     # 報酬用ブザーを鳴らします。
     def trigger_reward_buzzer(self):
-        self._trigger_single_device(self.reward_buzzer)
+        self._trigger_single_device(self._reward_buzzer)
 
     # 報酬用ポンプを駆動します。
     def trigger_reward_pump(self):
-        self._trigger_single_device(self.reward_pump)
+        self._trigger_single_device(self._reward_pump)
     
 
 # GPIO クラスのテスト
-if __name__ == "__main__":
+if __name__ == '__main__':
     
     print('===== GPIO test =====')
 

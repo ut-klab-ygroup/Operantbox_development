@@ -1,6 +1,6 @@
-operant_conditioning_task-211101 プログラムについて
+operant_conditioning_task-211105 プログラムについて
 
-2021年11月1日
+2021年11月5日
 株式会社知能情報システム
 高田直樹
 
@@ -21,9 +21,9 @@ Raspberry Pi と Python 環境を以下の手順を参考にセットアップ�
     のインストーラーを適当な PC にダウンロードします。
     
 (2) 8 GB 以上の microSD カードを PC に接続し、Raspberry Pi OS を 
-    microSD カード にインストールします。
+    microSD カードにインストールします。
     
-(3) microSD カード を Raspberry Pi に装着して、Raspberry Pi を
+(3) microSD カードを Raspberry Pi に装着して、Raspberry Pi を
     起動します。
     
 (4) 下記のコマンドで、Raspberry Pi OS にデフォルトで設定されている 
@@ -35,6 +35,7 @@ Raspberry Pi と Python 環境を以下の手順を参考にセットアップ�
 
     上記の代わりに Berry Conda を使用する場合は、下記のコマンドで
     インストールします。
+    開発環境では、Berry Conda (Python 3.6.1) を使用しました。
     
     $ wget https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh
     $ wget https://github.com/jjhelmus/berryconda/releases/download/v2.0.0/Berryconda3-2.0.0-Linux-armv7l.sh
@@ -42,22 +43,22 @@ Raspberry Pi と Python 環境を以下の手順を参考にセットアップ�
     $ ./Berryconda3-2.0.0-Linux-armv7l.sh
     
 (5) 下記の Python パッケージを pip コマンドでインストールします。
+    バージョンは、開発環境で使用したものです。
 
     transitions==0.8.10
     gpiozero==1.6.2
     RPi.GPIO==0.7.0
     numpy==1.15.1
-    dataclasses==0.8
     toml==0.10.2
 
-(6) "operant_conditioning_task-211101" フォルダーを Raspberry Pi 
+(6) "operant_conditioning_task-211105" フォルダーを Raspberry Pi 
     の任意の場所にコピーします。
     
 (7) GPIO ピンに適切なデバイスを接続します。
 
 [参考1: PyCharm のインストール]
 (1) 公式ページから Linux 版の PyCharm をダウンロードします。
-(2) 下記のコマンドで、Java SDK をインストールします。
+(2) Java SDK がインストールされていない場合は、下記のコマンドでインストールします。
     $ sudo apt install openjdk-11-jdk
 (3) 下記のコマンドで、ダウンロード ファイルを解凍します。
     $ tar zxvf <ダウンロード フォルダー>/pycharm-community-<バージョン名>.tar.gz
@@ -72,16 +73,28 @@ $ sudo apt install ibus-mozc
 https://rikoubou.hatenablog.com/entry/2020/06/11/133716
 
 
-2. プログラムの操作方法
+3. プログラムの操作方法
 
 operant_conditioning_task プログラムの操作は、以下にように行います。
 
-(1) "settings" フォルダーにある settings.toml ファイルを
-    テキスト エディターで開いて、必要な設定の変更を行います。
+(1) settings フォルダーにある settings.toml ファイルを
+    テキスト エディターで開いて、必要な設定を行います。
     各設定項目については、settings.toml ファイルに記載の
     コメントを参照してください。
+    それ以外の設定は、settings.py ファイルの __init__() 関数の中を
+    書き換える必要があります。
+    特記すべきパラメーターについて、以下に記載します。
+    
+    num_trials_per_experiment: 
+      指定した試行回数で実験を停止します。-1 の場合は、無制限です。
+    show_verbose_log: 
+      詳細なログ情報をコンソールに出力するかどうかのフラグです。
+      この設定に関係なく、ログ ファイルには詳細なログ情報が記録されます。
+    debug['skip_state']:
+      ステート マシンのスケルトンをデバッグ実行するため、各状態の具体的な
+      処理をスキップします。
 
-(2) LXTerminal を開き、"operant_conditioning_task-211101" フォルダー
+(2) LXTerminal を開き、"operant_conditioning_task-211105" フォルダー
     に移動して、下記のコマンドでプログラムを実行します。
     
     python operant_conditioning_task.py <-n, --name experiment_name> 
@@ -106,3 +119,27 @@ operant_conditioning_task プログラムの操作は、以下にように行い
       でファイルを生成します。
 
 (3) Ctrl+C キーを押すと、プログラムが終了します。
+    ログ ファイル (*.txt) と行動結果ファイル (*.csv) が、指定された
+    パスに出力されます。
+
+
+4. ステート マシンのテスト
+
+operant_conditioning_model.py の "if __name__ == '__main__':" 
+内で、ステート マシンのテストを行うことができます。
+unit_state_test = True の場合は、test_unit_state() 関数で
+状態クラスの名前を指定して、単一の状態クラスをテスト実行します。
+unit_state_test = False の場合は、test_state_machine_skeleton() 
+関数で、ステート マシンのスケルトンをテスト実行します。
+スケルトンをテストする場合は、Settings クラスの 
+self.debug['skip_state'] を True に設定し、
+状態クラスの enter() 関数の "if self._settings.debug['skip_state']:" 
+内を、試したい遷移になるように書き換えます。
+
+
+5. 参考 URL
+
+・https://qiita.com/noca/items/f7ffd4acc641a809ac67
+  「Pythonで状態遷移(transitions)」
+  関連記事に、さらに詳しいページへのリンクがあります。
+
