@@ -28,13 +28,13 @@ class LickState(State):
         # ===== インスタンス変数 =====
 
         # プログラム全体の設定です。
-        self.settings = kwargs['settings']
+        self._settings = kwargs['settings']
 
         # GPIO のデジタル入出力を行うオブジェクトです。
-        self.task_gpio = kwargs['task_gpio']
+        self._task_gpio = kwargs['task_gpio']
 
         # 情報のログ出力を行うオブジェクトです。
-        self.logger = kwargs['logger']
+        self._logger = kwargs['logger']
 
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
@@ -43,27 +43,27 @@ class LickState(State):
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # マウスの lick 状態の処理を開始します。
     def enter(self, event_data):
-        self.logger.info(self.name + ': Started.')
+        self._logger.info(self.name + ': Started.')
 
         # 状態の結果データを初期化します。
         self.results = dict()
 
-        if self.settings.debug['skip_state']:
+        if self._settings.debug['skip_state']:
             time.sleep(2)
             self.results['state_result'] = TaskResult.Success
-            self.logger.info(self.name + ': Finished')
+            self._logger.info(self.name + ': Finished')
             return
 
         # フェーズ設定を取得します。
-        phase_settings = self.settings.get_phase_settings()
+        phase_settings = self._settings.get_phase_settings()
 
         # GPIO の現在の状態を再設定します。
-        self.task_gpio.reset_state(self.name)
+        self._task_gpio.reset_state(self.name)
 
         # マウスの lick 課題を監視します。
         self._monitor_lick_task(phase_settings)
 
-        self.logger.debug(self.name + ': Finished.')
+        self._logger.debug(self.name + ': Finished.')
 
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
@@ -75,26 +75,26 @@ class LickState(State):
         # lick 課題をスキップする場合は何もしません。
         if not phase_settings.is_lick_wait:
             self.results['state_result'] = TaskResult.Skipped
-            self.logger.info(self.name + ': Skipped.')
+            self._logger.info(self.name + ': Skipped.')
             return
 
         # チャンバーの照明を点灯します。
-        self.task_gpio.switch_chamber_light('ON')
+        self._task_gpio.switch_chamber_light('ON')
         self.results['light_on_time'] = time.time()
 
         # lick 行動、あるいは nose poke 行動が検出されるまで監視を行います。
         while True:
             # lick 行動が検出された場合、課題に成功したとみなします。
-            if self.task_gpio.is_licked:
-                self.task_gpio.get_lick_results(self.results)
+            if self._task_gpio.is_licked:
+                self._task_gpio.get_lick_results(self.results)
                 self.results['state_result'] = TaskResult.Success
-                self.logger.info(self.name + ': Success.')
+                self._logger.info(self.name + ': Success.')
                 return
             # nose poke 行動が検出された場合、課題に失敗したとみなします。
-            elif self.task_gpio.is_nose_poked and phase_settings.is_perservative:
-                self.task_gpio.get_nose_poke_results(self.results)
+            elif self._task_gpio.is_nose_poked and phase_settings.is_perservative:
+                self._task_gpio.get_nose_poke_results(self.results)
                 self.results['state_result'] = TaskResult.Failure
-                self.logger.info(self.name + ': Failure.')
+                self._logger.info(self.name + ': Failure.')
                 return
 
             time.sleep(0.001)

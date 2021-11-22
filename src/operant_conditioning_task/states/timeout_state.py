@@ -26,34 +26,34 @@ class TimeoutState(State):
         # ===== インスタンス変数 =====
 
         # プログラム全体の設定です。
-        self.settings = kwargs['settings']
+        self._settings = kwargs['settings']
 
         # GPIO のデジタル入出力を行うオブジェクトです。
-        self.task_gpio = kwargs['task_gpio']
+        self._task_gpio = kwargs['task_gpio']
 
         # ログ出力を行うオブジェクトです。
-        self.logger = kwargs['logger']
+        self._logger = kwargs['logger']
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # タイムアウト状態の処理を開始します。
     def enter(self, event_data):
-        self.logger.info(self.name + ': Started.')
+        self._logger.info(self.name + ': Started.')
 
-        if self.settings.debug['skip_state']:
+        if self._settings.debug['skip_state']:
             time.sleep(2)
-            self.logger.info(self.name + ': Finished.')
+            self._logger.info(self.name + ': Finished.')
             return
 
         # フェーズ設定を取得します。
-        phase_settings = self.settings.get_phase_settings()
+        phase_settings = self._settings.get_phase_settings()
 
         # GPIO の現在の状態を再設定します。
-        self.task_gpio.reset_state(self.name)
+        self._task_gpio.reset_state(self.name)
 
         # タイムアウト状態の処理を行います。
         self._process_timeout(phase_settings)
 
-        self.logger.debug(self.name + ': Finished.')
+        self._logger.debug(self.name + ': Finished.')
 
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
@@ -63,7 +63,7 @@ class TimeoutState(State):
     def _process_timeout(self, phase_settings):
 
         # チャンバーの照明を点灯します。
-        self.task_gpio.switch_chamber_light('ON')
+        self._task_gpio.switch_chamber_light('ON')
 
         # self.timeout_in_s で指定した期間で待機します。
         start_time = time.perf_counter()
@@ -71,4 +71,4 @@ class TimeoutState(State):
             time.sleep(0.001)
 
         # チャンバーの照明を点滅します。
-        self.task_gpio.switch_chamber_light('Blink')
+        self._task_gpio.switch_chamber_light('Blink')

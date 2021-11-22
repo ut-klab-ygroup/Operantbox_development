@@ -51,10 +51,17 @@ class OperantConditioningError(Exception):
     pass
 
 
+class OperantConditioningSettingError(Exception):
+    """
+    operant_conditioning_task プログラムの設定に関する例外です。
+    """
+    pass
+
+
 # ログのテスト
-if __name__ == "__main__":
+if __name__ == '__main__':
     logger = create_logger('logger_test.txt', False)
-    logger.debug('logger: Debug')
-    logger.info('logger: Info')
-    logger.warning('logger: Warning')
-    logger.error('logger: Error')
+    logger.debug('_logger: Debug')
+    logger.info('_logger: Info')
+    logger.warning('_logger: Warning')
+    logger.error('_logger: Error')
