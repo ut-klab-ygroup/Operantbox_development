@@ -1,18 +1,23 @@
+#include <AccelStepper.h>
+#include <MultiStepper.h>
 
-// Syringe Pump motor control rev0.2 06/08/2021  Chon-wa Cheong
+
+// Syringe Pump motor control rev0.5 12/21/2021  Chon-wa Cheong
 
 // Rev History 
 // Rev0.1 6/1/2021 : Initial code
 // Rev0.2 6/8/2021 : Correct Motor parameter setting 
 // Rev0.3 6/16/2021 : Add external pin D0 as detection for water
+// Rev0.4 7/26/2021 : change push parameter from 158 to 400 and pull 100
+// Rev0.5 12/21/2021 : change external trigger with High for enable and Low for disable, add more comments and definition description. 
 
 #include <AccelStepper.h> 
 
-#define X_SPEED 64      // X steps pull position 
-#define X_DOUBLE 158    // X steps push position 
-#define X_ACCEL 8       // no meaning 
+#define X_SPEED 100      // X steps pull position 
+#define X_DOUBLE 400    // X steps push position 
+#define X_ACCEL 8       // Not used 
 
-#define EN        8    
+#define EN        8    // Not used 
 
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
@@ -21,18 +26,18 @@
 
 AccelStepper stepper(AccelStepper::DRIVER, X_STP, X_DIR); // define motor driver mode 
 
-int k; 
-int i;
-int j;
-int l; 
-int m;
-int val;
-char x;
+int k;      // Define the max number of times Motor can run until it gets stop
+int i;      // Define Initial Motor Current position 
+int j;      // Define Motor current position after push (in order to define pull action) 
+int l;      // Not used 
+int m;      // Not used
+int val;    // GPIO Trigger signal read from GPIO#3 
+char x;     // Not used 
 
 
 void setup() {
-  pinMode (3, INPUT); 
-  pinMode (8, OUTPUT); 
+  pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop 
+  pinMode (8, OUTPUT);  // used for test purpose only 
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(500);   //max speed steps per second settiing 
   stepper.setAcceleration(6000); // acceleration steps per second per second 
@@ -56,7 +61,7 @@ void loop() {
 
       val = digitalRead(3); 
    
-    if (val == LOW && k < 100 ) {
+    if (val == HIGH && k < 100000 ) {
 
      // if (x == 'Y' && k == 0) {
      // i = stepper.currentPosition(); 
@@ -83,19 +88,19 @@ void loop() {
         stepper.stop();
       	delay(500);
         
-    j = stepper.currentPosition();
-        stepper.moveTo( j - X_SPEED ); // set new target position
-        while (stepper.currentPosition() != j - X_SPEED ) // Full speed back  
-   	    stepper.run();
-        stepper.stop();
-        delay(500);
+     j = stepper.currentPosition();
+      stepper.moveTo( j - X_SPEED ); // set new target position
+      while (stepper.currentPosition() != j - X_SPEED ) // Full speed back  
+   	  stepper.run();
+      stepper.stop();
+      delay(500);
         k++;
      }
      
      // Serial.println("water provided 2nd time, Nose Poke touch again? Y/N? \n");
        
       else {
-        digitalWrite(8, HIGH);
+        digitalWrite(8, HIGH);  // Used for testing purupose only 
      // Serial.println (val);
         
       }
