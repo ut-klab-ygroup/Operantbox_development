@@ -11,13 +11,9 @@
 // Rev0.4 7/26/2021 : change push parameter from 158 to 400 and pull 100
 // Rev0.5 12/21/2021 : change external trigger with High for enable and Low for disable, add more comments and definition description.
 
-#include <AccelStepper.h>
 
-#define X_SPEED 100      // X steps pull position 
-#define X_DOUBLE 400    // X steps push position 
-#define X_ACCEL 8       // Not used 
-
-#define EN        8    // Not used 
+#define PULL_POSITION_DELTA 50      // X steps pull position 
+#define PUSH_POSITION_DELTA 100    // X steps push position 
 
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
@@ -36,11 +32,11 @@ char x;     // Not used
 
 
 void setup() {
-  pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
+  pinMode (3, INPUT_PULLUP); // Input triggering for water, 5V water out, 0V stop
   pinMode (8, OUTPUT);  // used for test purpose only
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(500);   //max speed steps per second settiing
-  stepper.setAcceleration(6000); // acceleration steps per second per second
+  stepper.setAcceleration(3000); // acceleration steps per second
   stepper.setSpeed(500);  // speed setting steps per second
 
   // stepper.setEnablePin(8);
@@ -60,20 +56,20 @@ void loop() {
   // stepper.disableOutputs();
 
   val = digitalRead(3);
-
-  if (val == HIGH && k < 100000 ) {
+  Serial.println(val);
+  if (val == LOW && k < 100000 ) {
 
     // if (x == 'Y' && k == 0) {
     // i = stepper.currentPosition();
-    // stepper.moveTo(X_SPEED + i );  // set target position + current position
-    // while (stepper.currentPosition() != (i + X_SPEED)) // Full speed up to 200 + current position
+    // stepper.moveTo(PULL_DELTA + i );  // set target position + current position
+    // while (stepper.currentPosition() != (i + PULL_DELTA)) // Full speed up to 200 + current position
     // stepper.run();
     // stepper.stop();
     // delay(1000);
 
     //j = stepper.currentPosition();
-    // stepper.moveTo(j - X_SPEED ); // set new target position as current position - 200
-    // while (stepper.currentPosition() != j - X_SPEED) // Full speed back
+    // stepper.moveTo(j - PULL_DELTA ); // set new target position as current position - 200
+    // while (stepper.currentPosition() != j - PULL_DELTA) // Full speed back
     // stepper.run();
     // stepper.stop();
     // Serial.println("water provided, Nose Poke touch again? Y/N? \n");
@@ -81,16 +77,16 @@ void loop() {
     // }
 
     digitalWrite(8, LOW);
-    i = stepper.currentPosition();
-    stepper.moveTo(X_DOUBLE + i );  // set target position + current position
-    while (stepper.currentPosition() != (i + X_DOUBLE )) // Full speed up to 400 + current position
+    i = stepper.currentPosition()-PUSH_POSITION_DELTA;
+    stepper.moveTo(  i );  // set target position + current position
+    while (stepper.currentPosition() != i) // Full speed up to 400 + current position
       stepper.run();
     stepper.stop();
     delay(500);
 
-    j = stepper.currentPosition();
-    stepper.moveTo( j - X_SPEED ); // set new target position
-    while (stepper.currentPosition() != j - X_SPEED ) // Full speed back
+    j = stepper.currentPosition() + PULL_POSITION_DELTA;
+    stepper.moveTo( j ); // set new target position
+    while (stepper.currentPosition() != j  ) // Full speed back
       stepper.run();
     stepper.stop();
     delay(500);
@@ -101,7 +97,7 @@ void loop() {
 
   else {
     digitalWrite(8, HIGH);  // Used for testing purupose only
-//     Serial.println (val);
+    //     Serial.println (val);
 
   }
 
