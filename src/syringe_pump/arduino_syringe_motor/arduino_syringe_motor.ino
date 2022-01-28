@@ -32,7 +32,7 @@ char x;     // Not used
 
 
 void setup() {
-  pinMode (3, INPUT_PULLUP); // Input triggering for water, 5V water out, 0V stop
+  pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
   pinMode (8, OUTPUT);  // used for test purpose only
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(500);   //max speed steps per second settiing
@@ -57,7 +57,7 @@ void loop() {
 
   val = digitalRead(3);
   Serial.println(val);
-  if (val == LOW && k < 100000 ) {
+  if (val == HIGH && k < 100000 ) {
 
     // if (x == 'Y' && k == 0) {
     // i = stepper.currentPosition();
