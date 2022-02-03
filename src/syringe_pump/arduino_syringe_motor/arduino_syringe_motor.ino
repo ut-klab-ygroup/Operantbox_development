@@ -14,6 +14,7 @@
 
 #define PULL_POSITION_DELTA 50      // X steps pull position 
 #define PUSH_POSITION_DELTA 100    // X steps push position 
+#define PUSH_MAX 100    // X steps push position 
 
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
@@ -55,7 +56,7 @@ void loop() {
 
   val = digitalRead(3);
   Serial.println(val);
-  if (val == HIGH && k < 100000 ) {
+  if (val == HIGH && k < PUSH_MAX ) {
 
     digitalWrite(8, LOW);
     i = stepper.currentPosition()-PUSH_POSITION_DELTA;
