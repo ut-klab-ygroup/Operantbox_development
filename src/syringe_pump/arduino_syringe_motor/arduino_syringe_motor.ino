@@ -12,8 +12,11 @@
 // Rev0.5 12/21/2021 : change external trigger with High for enable and Low for disable, add more comments and definition description.
 
 
-#define PULL_POSITION_DELTA 50      // X steps pull position 
+
 #define PUSH_POSITION_DELTA 100    // X steps push position 
+#define PULL_POSITION_DELTA 50      // X steps pull position 
+#define ACCEL 5000
+#define SPEED 1500
 #define PUSH_MAX 100    // X steps push position 
 
 #define X_DIR     5    // direction pin definition 
@@ -34,9 +37,9 @@ void setup() {
   pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
   pinMode (8, OUTPUT);  // used for test purpose only
   Serial.begin(BAUD_RATE);
-  stepper.setMaxSpeed(500);   //max speed steps per second settiing
-  stepper.setAcceleration(3000); // acceleration steps per second
-  stepper.setSpeed(500);  // speed setting steps per second
+  stepper.setMaxSpeed(SPEED);   //max speed steps per second settiing
+  stepper.setAcceleration(ACCEL); // acceleration steps per second
+  stepper.setSpeed(SPEED);  // speed setting steps per second
 
   // stepper.setEnablePin(8);
 
