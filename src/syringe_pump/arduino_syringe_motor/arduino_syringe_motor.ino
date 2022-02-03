@@ -25,10 +25,8 @@ AccelStepper stepper(AccelStepper::DRIVER, X_STP, X_DIR); // define motor driver
 int k;      // Define the max number of times Motor can run until it gets stop
 int i;      // Define Initial Motor Current position
 int j;      // Define Motor current position after push (in order to define pull action)
-int l;      // Not used
-int m;      // Not used
 int val;    // GPIO Trigger signal read from GPIO#3
-char x;     // Not used
+
 
 
 void setup() {
@@ -59,28 +57,12 @@ void loop() {
   Serial.println(val);
   if (val == HIGH && k < 100000 ) {
 
-    // if (x == 'Y' && k == 0) {
-    // i = stepper.currentPosition();
-    // stepper.moveTo(PULL_DELTA + i );  // set target position + current position
-    // while (stepper.currentPosition() != (i + PULL_DELTA)) // Full speed up to 200 + current position
-    // stepper.run();
-    // stepper.stop();
-    // delay(1000);
-
-    //j = stepper.currentPosition();
-    // stepper.moveTo(j - PULL_DELTA ); // set new target position as current position - 200
-    // while (stepper.currentPosition() != j - PULL_DELTA) // Full speed back
-    // stepper.run();
-    // stepper.stop();
-    // Serial.println("water provided, Nose Poke touch again? Y/N? \n");
-    // k++ ;
-    // }
-
     digitalWrite(8, LOW);
     i = stepper.currentPosition()-PUSH_POSITION_DELTA;
     stepper.moveTo(  i );  // set target position + current position
     while (stepper.currentPosition() != i) // Full speed up to 400 + current position
       stepper.run();
+      
     stepper.stop();
     delay(500);
 
@@ -88,9 +70,15 @@ void loop() {
     stepper.moveTo( j ); // set new target position
     while (stepper.currentPosition() != j  ) // Full speed back
       stepper.run();
+      
     stepper.stop();
-    delay(500);
+
+    // wait until pulse end. only 1 push for each high
+    while(digitalRead(3)==HIGH)
+       delay(100);
+       
     k++;
+    
   }
 
   // Serial.println("water provided 2nd time, Nose Poke touch again? Y/N? \n");
