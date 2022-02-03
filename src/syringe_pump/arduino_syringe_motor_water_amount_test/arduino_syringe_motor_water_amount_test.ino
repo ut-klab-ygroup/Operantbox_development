@@ -46,19 +46,14 @@ void loop() {
 
     digitalWrite(8, LOW);
     i = stepper.currentPosition() - PUSH_POSITION_DELTA;
-    stepper.moveTo(  i );  // set target position + current position
-    while (stepper.currentPosition() != i) // Full speed up to 400 + current position
-      stepper.run();
-
-    stepper.stop();
+    stepper.runToNewPosition(i);
+    while (stepper.currentPosition() != i  ) // Full speed back
+      delay(50);
     delay(500);
-
     j = stepper.currentPosition() + PULL_POSITION_DELTA;
-    stepper.moveTo( j ); // set new target position
+    stepper.runToNewPosition(j);
     while (stepper.currentPosition() != j  ) // Full speed back
-      stepper.run();
-
-    stepper.stop();
+      delay(50);
 
     delay(500);
   }
