@@ -42,9 +42,9 @@ void setup() {
   stepper.setSpeed(SPEED);  // speed setting steps per second
 
   // stepper.setEnablePin(8);
-
+  digitalWrite(8, HIGH);  // disable motor
   Serial.println("<Adruino is ready");
-  Serial.println("<Nose Poke touch? Y/N>");
+
   k = 0 ;
   val = 0;
 }
@@ -53,9 +53,6 @@ void loop() {
 
   // if (Serial.available()>0) {
   // char x= Serial.read();
-
-  // stepper.enableOutputs();
-  // stepper.disableOutputs();
 
   val = digitalRead(3);   
   Serial.println(val);
@@ -76,7 +73,7 @@ void loop() {
       stepper.run();
       
     stepper.stop();
-
+    digitalWrite(8, HIGH);  // disable motor
     // wait until pulse end. only 1 push for each high
     while(digitalRead(3)==HIGH)
        delay(100);
@@ -85,23 +82,8 @@ void loop() {
     
   }
 
-  // Serial.println("water provided 2nd time, Nose Poke touch again? Y/N? \n");
-
-  else {
-    digitalWrite(8, HIGH);  // Used for testing purupose only
-    //     Serial.println (val);
-
-  }
+    
+    
 
 }
 
-//else if ( x == 'N' ) {
-//  Serial.println("system stops and move back to initial position \n");
-//  k = 0;
-// l = stepper.currentPosition();
-//  stepper.moveTo ( 0 - l ); // move back to the origitnal position
-//  while (stepper.currentPosition() != 0 - l)
-//  stepper.run();
-//  stepper.stop();
-// Serial.println ("back to original position \n");
-//  }
