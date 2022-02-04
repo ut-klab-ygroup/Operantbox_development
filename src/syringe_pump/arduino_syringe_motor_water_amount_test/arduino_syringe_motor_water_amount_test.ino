@@ -46,7 +46,7 @@ void loop() {
   stepper.setSpeed(SPEED);  // speed setting steps per second
   for (k = 0; k < PUSH_MAX; k++) {
 
-    digitalWrite(8, LOW);
+    digitalWrite(8, LOW);  // Enable Motor 
     if (DEBUG) {
       Serial.println("current");
       Serial.println(k);
