@@ -19,7 +19,7 @@ int val;    // GPIO Trigger signal read from GPIO#3
 
 void setup() {
   pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
-  pinMode (8, OUTPUT);  // used for test purpose only
+  pinMode (8, OUTPUT);  // Motor enable/disable control 
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(500);   //max speed steps per second settiing
   stepper.setAcceleration(3000); // acceleration steps per second
