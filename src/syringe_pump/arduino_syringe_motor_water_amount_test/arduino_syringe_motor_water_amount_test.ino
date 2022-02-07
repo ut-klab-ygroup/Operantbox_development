@@ -3,7 +3,7 @@
 
 
 
-#define PUSH_POSITION_DELTA 20    // X steps push position 
+#define PUSH_POSITION_DELTA 22    // X steps push position 
 #define PULL_POSITION_DELTA 15      // X steps pull position 
 #define ACCEL 50
 #define SPEED 100
