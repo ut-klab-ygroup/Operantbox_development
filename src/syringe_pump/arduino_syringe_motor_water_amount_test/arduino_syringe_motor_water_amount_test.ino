@@ -77,5 +77,5 @@ void loop() {
     delay(500);
 
   }
-
+digitalWrite(8, HIGH);  // Enable Motor 
 }
