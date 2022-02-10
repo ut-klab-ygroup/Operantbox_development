@@ -8,7 +8,7 @@
 #define ACCEL 50
 #define SPEED 100
 #define PUSH_MAX 100    // X steps push position 
-
+#define INTERVAL 1000
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
 
@@ -73,8 +73,8 @@ void loop() {
     stepper.moveTo( j ); // set new target position
     while (stepper.currentPosition() != j   ) // Full speed back
       stepper.run();
-
-    delay(500);
+    digitalWrite(8, HIGH);
+    delay(INTERVAL);
 
   }
 digitalWrite(8, HIGH);  // Enable Motor 
