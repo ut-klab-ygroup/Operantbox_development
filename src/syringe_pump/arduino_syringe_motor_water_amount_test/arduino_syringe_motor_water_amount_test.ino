@@ -3,12 +3,12 @@
 
 
 
-#define PUSH_POSITION_DELTA 22    // X steps push position 
-#define PULL_POSITION_DELTA 15      // X steps pull position 
-#define ACCEL 50
-#define SPEED 100
+#define PUSH_POSITION_DELTA 192    // X steps push position 
+#define PULL_POSITION_DELTA 70      // X steps pull position 
+#define ACCEL 60000
+#define SPEED 5000
 #define PUSH_MAX 100    // X steps push position 
-
+#define INTERVAL 1000
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
 
@@ -46,7 +46,7 @@ void loop() {
   stepper.setSpeed(SPEED);  // speed setting steps per second
   for (k = 0; k < PUSH_MAX; k++) {
 
-    digitalWrite(8, LOW);  // Enable Motor 
+    digitalWrite(8, LOW);  // Enable Motor
     if (DEBUG) {
       Serial.println("current");
       Serial.println(k);
@@ -73,9 +73,9 @@ void loop() {
     stepper.moveTo( j ); // set new target position
     while (stepper.currentPosition() != j   ) // Full speed back
       stepper.run();
-
-    delay(500);
+    digitalWrite(8, HIGH);  // Disable Motor
+    delay(INTERVAL);
 
   }
-digitalWrite(8, HIGH);  // Enable Motor 
+  digitalWrite(8, HIGH);  // Disable Motor
 }
