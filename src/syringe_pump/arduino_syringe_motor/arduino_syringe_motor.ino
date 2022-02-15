@@ -13,10 +13,10 @@
 
 
 
-#define PUSH_POSITION_DELTA 100    // X steps push position 
-#define PULL_POSITION_DELTA 50      // X steps pull position 
-#define ACCEL 5000
-#define SPEED 1500
+#define PUSH_POSITION_DELTA 192    // X steps push position 
+#define PULL_POSITION_DELTA 70      // X steps pull position 
+#define ACCEL 60000
+#define SPEED 5000
 #define PUSH_MAX 100    // X steps push position 
 
 #define X_DIR     5    // direction pin definition 
@@ -86,4 +86,3 @@ void loop() {
     
 
 }
-
