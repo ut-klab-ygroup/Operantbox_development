@@ -32,6 +32,7 @@ void loop() {
 
 
   digitalWrite(8, LOW);
+  stepper.setCurrentPosition(0);
   j = stepper.currentPosition() + PULL_POSITION_DELTA;
   stepper.moveTo( j ); // set new target position
   while (stepper.currentPosition() != j && digitalRead(3) == HIGH  ) // Full speed back
