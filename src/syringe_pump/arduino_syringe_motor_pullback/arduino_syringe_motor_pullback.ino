@@ -21,7 +21,7 @@ void setup() {
   pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
   pinMode (8, OUTPUT);  // Motor enable/disable control 
   Serial.begin(BAUD_RATE);
-  stepper.setMaxSpeed(500);   //max speed steps per second settiing
+  stepper.setMaxSpeed(5000);   //max speed steps per second settiing
   stepper.setAcceleration(3000); // acceleration steps per second
   stepper.setSpeed(500);  // speed setting steps per second
 
