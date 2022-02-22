@@ -37,6 +37,7 @@ void loop() {
     // read incoming bytes
     incomingByte = Serial.read();
     Serial.print ("Please enter "p" to pullback");
+    stepper.setCurrentPosition(0);
     if (incomingByte == 'p') {
       Serial.print ("Pull");
       digitalWrite(8, LOW); // Enable motor
