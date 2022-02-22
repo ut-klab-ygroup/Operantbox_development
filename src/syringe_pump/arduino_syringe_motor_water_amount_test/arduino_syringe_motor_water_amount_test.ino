@@ -77,5 +77,6 @@ void loop() {
     delay(INTERVAL);
 
   }
+  stepper.setCurrentPosition(0);
   digitalWrite(8, HIGH);  // Disable Motor
 }
