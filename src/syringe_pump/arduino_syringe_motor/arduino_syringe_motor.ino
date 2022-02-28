@@ -17,7 +17,7 @@
 #define PULL_POSITION_DELTA 80      // X steps pull position 
 #define ACCEL 60000
 #define SPEED 5000
-#define PUSH_MAX 100    // X steps push position 
+#define PUSH_MAX 8000    // X steps push position 5ml syringe, 0.5ul for each
 
 #define X_DIR     5    // direction pin definition 
 #define X_STP     2  // step pin definition 
