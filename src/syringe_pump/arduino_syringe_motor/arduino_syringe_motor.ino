@@ -1,20 +1,9 @@
 #include <AccelStepper.h>
 #include <MultiStepper.h>
 
-
-// Syringe Pump motor control rev0.5 12/21/2021  Chon-wa Cheong
-
-// Rev History
-// Rev0.1 6/1/2021 : Initial code
-// Rev0.2 6/8/2021 : Correct Motor parameter setting
-// Rev0.3 6/16/2021 : Add external pin D0 as detection for water
-// Rev0.4 7/26/2021 : change push parameter from 158 to 400 and pull 100
-// Rev0.5 12/21/2021 : change external trigger with High for enable and Low for disable, add more comments and definition description.
-
-
-
 #define PUSH_POSITION_DELTA 192    // X steps push position 
 #define PULL_POSITION_DELTA 80      // X steps pull position 
+#define RESET_POSITION_DELTA 10000    // X steps pull position 
 #define ACCEL 60000
 #define SPEED 5000
 #define PUSH_MAX 8000    // X steps push position 5ml syringe, 0.5ul for each
@@ -24,14 +13,14 @@
 
 #define BAUD_RATE 9600 // define serial baud rate 
 
+#define DEBUG true
+
 AccelStepper stepper(AccelStepper::DRIVER, X_STP, X_DIR); // define motor driver mode
 
 int k;      // Define the max number of times Motor can run until it gets stop
 int i;      // Define Initial Motor Current position
 int j;      // Define Motor current position after push (in order to define pull action)
 int val;    // GPIO Trigger signal read from GPIO#3
-
-
 
 void setup() {
   pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
@@ -44,21 +33,20 @@ void setup() {
   // stepper.setEnablePin(8);
   digitalWrite(8, HIGH);  // disable motor
   Serial.println("<Adruino is ready");
-
+  Serial.print ("Enter p to pullback, s to stop, u to push");
   k = 0 ;
   val = 0;
 }
 
 void loop() {
 
-  // if (Serial.available()>0) {
-  // char x= Serial.read();
-
   val = digitalRead(3);
-  Serial.println(val);
+  if(DEBUG){
+    Serial.println(val);
+  }
+
   stepper.setCurrentPosition(0);
   if (val == HIGH && k < PUSH_MAX ) {
-
     digitalWrite(8, LOW);  // Enable Motor
     i = stepper.currentPosition() - PUSH_POSITION_DELTA;
     stepper.moveTo(  i );  // set target position + current position
@@ -80,10 +68,34 @@ void loop() {
       delay(100);
 
     k++;
-
   }
 
+  if (Serial.available() > 0) {
+    // read incoming bytes
+    incomingByte = Serial.read();
+    
+    if (incomingByte == 'p') {
+      Serial.print("Pull");
+      digitalWrite(8, LOW); // Enable motor
+      j = stepper.currentPosition() + RESET_POSITION_DELTA;
+      stepper.moveTo( j ); // set new target position
+      while (stepper.currentPosition() != j||Serial.read()!='s' ) // Full speed back
+        stepper.run();
+      // stepper.stop();
+      digitalWrite(8, HIGH); // disable motor
+    }
 
+    if (incomingByte == 'u') {
+      Serial.print("Push");
+      digitalWrite(8, LOW); // Enable motor
+      j = stepper.currentPosition() - RESET_POSITION_DELTA;
+      stepper.moveTo( j ); // set new target position
+      while (stepper.currentPosition() != j||Serial.read()!='s' ) // Full speed back
+        stepper.run();
+      // stepper.stop();
+      digitalWrite(8, HIGH); // disable motor
+    }
 
+  }
 
 }
