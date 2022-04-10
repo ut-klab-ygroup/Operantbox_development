@@ -13,7 +13,7 @@
 
 #define BAUD_RATE 9600 // define serial baud rate 
 
-#define DEBUG true
+#define DEBUG false
 
 AccelStepper stepper(AccelStepper::DRIVER, X_STP, X_DIR); // define motor driver mode
 
@@ -21,6 +21,7 @@ int k;      // Define the max number of times Motor can run until it gets stop
 int i;      // Define Initial Motor Current position
 int j;      // Define Motor current position after push (in order to define pull action)
 int val;    // GPIO Trigger signal read from GPIO#3
+char incomingByte = 0; // for incoming serial data
 
 void setup() {
   pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
@@ -47,6 +48,7 @@ void loop() {
 
   stepper.setCurrentPosition(0);
   if (val == HIGH && k < PUSH_MAX ) {
+    Serial.println("Trigger detected");
     digitalWrite(8, LOW);  // Enable Motor
     i = stepper.currentPosition() - PUSH_POSITION_DELTA;
     stepper.moveTo(  i );  // set target position + current position
