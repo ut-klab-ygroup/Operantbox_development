@@ -46,7 +46,10 @@ void loop() {
     Serial.println(val);
   }
 
+  // reset position to avoid saturatoin
   stepper.setCurrentPosition(0);
+
+  
   if (val == HIGH && k < PUSH_MAX ) {
     Serial.println("Trigger detected");
     digitalWrite(8, LOW);  // Enable Motor
@@ -77,15 +80,15 @@ void loop() {
     incomingByte = Serial.read();
     
     if (incomingByte == 'p') {
-      Serial.print("Pull");
+      Serial.print("Pull start");
       digitalWrite(8, LOW); // Enable motor
       j = stepper.currentPosition() + RESET_POSITION_DELTA;
       stepper.moveTo( j ); // set new target position
       while (stepper.currentPosition() != j||Serial.read()!='s' ){
         stepper.run();
-        Serial.println("Pulling");
+        Serial.println(".");
       } 
-        
+      Serial.println("End");
       // stepper.stop();
       digitalWrite(8, HIGH); // disable motor
       k=0;
@@ -96,8 +99,11 @@ void loop() {
       digitalWrite(8, LOW); // Enable motor
       j = stepper.currentPosition() - RESET_POSITION_DELTA;
       stepper.moveTo( j ); // set new target position
-      while (stepper.currentPosition() != j||Serial.read()!='s' ) // Full speed back
+      while (stepper.currentPosition() != j||Serial.read()!='s' ){ // Full speed back
         stepper.run();
+        Serial.println(".");
+      }
+      Serial.println("End");
       // stepper.stop();
       digitalWrite(8, HIGH); // disable motor
       k=0;
