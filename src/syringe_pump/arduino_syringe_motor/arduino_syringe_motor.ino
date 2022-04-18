@@ -3,7 +3,7 @@
 
 #define PUSH_POSITION_DELTA 192    // X steps push position 
 #define PULL_POSITION_DELTA 80      // X steps pull position 
-#define RESET_POSITION_DELTA 1000000    // X steps pull position 
+#define RESET_POSITION_DELTA 20000    // X steps pull position 
 #define ACCEL 60000
 #define SPEED 5000
 #define PUSH_MAX 8000    // X steps push position 5ml syringe, 0.5ul for each
@@ -86,8 +86,12 @@ void loop() {
       stepper.moveTo( j ); // set new target position
       while (stepper.currentPosition() < j||Serial.read()!='s' ){
         stepper.run();
-        Serial.println(".");
+        if(j%20==0){
+                  Serial.println(".");
+        }
+
       } 
+      stepper.stop();
       Serial.println("Pull end");
       // stepper.stop();
       digitalWrite(8, HIGH); // disable motor
@@ -101,10 +105,14 @@ void loop() {
       stepper.moveTo( j ); // set new target position
       while (stepper.currentPosition() > j||Serial.read()!='s' ){ // Full speed back
         stepper.run();
-        Serial.println(".");
+        if(j%20==0){
+                  Serial.println(".");
+        }
+
       }
+      stepper.stop();
       Serial.println("Push end");
-      // stepper.stop();
+       
       digitalWrite(8, HIGH); // disable motor
       k=0;
     }
