@@ -84,12 +84,14 @@ void loop() {
       digitalWrite(8, LOW); // Enable motor
       j = stepper.currentPosition() + RESET_POSITION_DELTA;
       stepper.moveTo( j ); // set new target position
-      while (stepper.currentPosition() < j||Serial.read()!='s' ){
+      while (stepper.currentPosition() < j ){
         stepper.run();
-        if(j%20==0){
+        if(stepper.currentPosition() %2000==0){
                   Serial.println(".");
         }
-
+        if(Serial.read()=='s'){
+          break;
+        }
       } 
       stepper.stop();
       Serial.println("Pull end");
@@ -103,12 +105,14 @@ void loop() {
       digitalWrite(8, LOW); // Enable motor
       j = stepper.currentPosition() - RESET_POSITION_DELTA;
       stepper.moveTo( j ); // set new target position
-      while (stepper.currentPosition() > j||Serial.read()!='s' ){ // Full speed back
+      while (stepper.currentPosition() > j ){ // Full speed back
         stepper.run();
-        if(j%20==0){
+        if(stepper.currentPosition() %2000==0){
                   Serial.println(".");
         }
-
+        if(Serial.read()=='s'){
+          break;
+        }
       }
       stepper.stop();
       Serial.println("Push end");
