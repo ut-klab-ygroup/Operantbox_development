@@ -319,7 +319,7 @@ if __name__ == '__main__':
     # 状態クラスの名前を指定して、単一の状態クラスをテスト実行します。
     unit_state_test = True
     if unit_state_test:
-        test_unit_state('LickState')
+        test_unit_state('TimeoutState')
     # ステート マシンのスケルトンをテスト実行します。
     else:
         test_state_machine_skeleton()
