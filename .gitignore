@@ -1,2 +1,4 @@
-
+**/__pycache__/** 
+**/test_log.txt
+**/test_results.csv
 *.hex

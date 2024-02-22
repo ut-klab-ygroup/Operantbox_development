@@ -8,6 +8,9 @@
 import numpy as np
 import toml
 
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 from utility import OperantConditioningSettingError
 
 
@@ -24,7 +27,7 @@ class Settings:
 
         try:
             # 設定ファイルを読み込みます。
-            settings_dict = toml.load(open(setting_file_path))
+            settings_dict = toml.load(open(setting_file_path, encoding='utf-8'))
 
             # 設定フェーズの順番を名前で示したリストです。
             self._phase_list = settings_dict['phase_list']
@@ -61,13 +64,13 @@ class Settings:
 
         # Raspberry Pi の GPIO の端子の割り当てです。
         self.pin_assignment = dict()
-        self.pin_assignment['chamber_light'] = 17
-        self.pin_assignment['lick_sensor'] = 25
-        self.pin_assignment['nose_poke_leds'] = [5, 6, 12, 13, 16]
-        self.pin_assignment['nose_poke_sensors'] = [19, 20, 21, 22, 23]
-        self.pin_assignment['reward_led'] = 18
-        self.pin_assignment['reward_buzzer'] = 26
-        self.pin_assignment['reward_pump'] = 24
+        self.pin_assignment['chamber_light'] = 20
+        self.pin_assignment['lick_sensor'] = 16
+        self.pin_assignment['nose_poke_leds'] = [26, 19, 13, 6, 5]
+        self.pin_assignment['nose_poke_sensors'] = [24, 23, 18, 15, 14]
+        self.pin_assignment['reward_led'] = 21
+        self.pin_assignment['reward_buzzer'] = 2
+        self.pin_assignment['reward_pump'] = 7
 
         # ===== その他の設定パラメーター =====
 

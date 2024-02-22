@@ -9,6 +9,9 @@ import time
 
 from transitions import Machine
 
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
 # ステート マシンで使用する状態が定義されたモジュールです。
 from states.initial_state import InitialState
 from states.lick_state import LickState
@@ -316,7 +319,7 @@ if __name__ == '__main__':
     # 状態クラスの名前を指定して、単一の状態クラスをテスト実行します。
     unit_state_test = True
     if unit_state_test:
-        test_unit_state('TimeoutState')
+        test_unit_state('LickState')
     # ステート マシンのスケルトンをテスト実行します。
     else:
         test_state_machine_skeleton()
