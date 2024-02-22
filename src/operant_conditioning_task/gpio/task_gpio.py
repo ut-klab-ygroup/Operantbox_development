@@ -26,7 +26,7 @@ class TaskGpio:
         self._nose_poke_sensors = []
         for i in range(len(pin_assignment['nose_poke_sensors'])):
            self._nose_poke_sensors.append(Button(pin_assignment['nose_poke_sensors'][i],
-                                                 hold_time=0.5, bounce_time=0.05))
+                                                 hold_time=0.5, bounce_time=0.05, active_state=True, pull_up=None))
         self._reward_led = LED(pin_assignment['reward_led'])
         self._reward_buzzer = LED(pin_assignment['reward_buzzer'])
         self._reward_pump = LED(pin_assignment['reward_pump'])
@@ -167,18 +167,21 @@ class TaskGpio:
 if __name__ == '__main__':
     
     print('===== GPIO test =====')
-
+    
+    from pathlib import Path
+    import sys
+    sys.path.append(str(Path(__file__).resolve().parent.parent))
     from utility import create_logger
 
     # GPIO ピンを設定します。
     pin_assignment = dict()
-    pin_assignment['chamber_light'] = 17
-    pin_assignment['lick_sensor'] = 25
-    pin_assignment['nose_poke_leds'] = [5, 6, 12, 13, 16]
-    pin_assignment['nose_poke_sensors'] = [19, 20, 21, 22, 23]
-    pin_assignment['reward_led'] = 18
-    pin_assignment['reward_buzzer'] = 26
-    pin_assignment['reward_pump'] = 24
+    pin_assignment['chamber_light'] = 20
+    pin_assignment['lick_sensor'] = 16
+    pin_assignment['nose_poke_leds'] = [26, 19, 13, 6, 5]
+    pin_assignment['nose_poke_sensors'] = [24, 23, 18, 15, 14]
+    pin_assignment['reward_led'] = 21
+    pin_assignment['reward_buzzer'] = 2
+    pin_assignment['reward_pump'] = 7
 
     # ログ出力を行うオブジェクトを生成します。
     logger = create_logger('./test_log.txt', True)
