@@ -28,13 +28,13 @@ trial_threshold_list = [100, 200, 300, 400, 500, 600]
 
 [phase1]
 x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
-is_nose_poke_skip = true
-is_lick_wait = false
-is_perservative = false
-wait_time_in_s = 20
+is_nose_poke_skip = false
+is_lick_wait = true
+is_perservative = true
+wait_time_in_s = 5
 timeout_in_s = 0
-limited_hold_in_s = 0
-stimulus_duration_in_s = 0
+limited_hold_in_s = 5
+stimulus_duration_in_s = 5
 
 [phase2]
 x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]

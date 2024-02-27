@@ -2,3 +2,5 @@
 **/test_log.txt
 **/test_results.csv
 *.hex
+src/operant_conditioning_task/log_files/*
+src/operant_conditioning_task/results_files/*
