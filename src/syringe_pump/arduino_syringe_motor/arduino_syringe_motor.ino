@@ -69,7 +69,7 @@ void loop() {
     stepper.stop();
     digitalWrite(8, HIGH);  // disable motor
     // wait until pulse end. only 1 push for each high
-    while (digitalRead(3) == HIGH)
+    while (digitalRead(3) == LOW)
       delay(100);
 
     k++;
