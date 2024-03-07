@@ -39,6 +39,24 @@ void setup() {
   val = 0;
 }
 
+void push() {
+  i = stepper.currentPosition() - PUSH_POSITION_DELTA;
+  stepper.moveTo(  i );  // set target position + current position
+  while (stepper.currentPosition() != i) // Full speed up to 400 + current position
+    stepper.run();
+
+  stepper.stop();
+}
+
+void pull() {
+  j = stepper.currentPosition() + PULL_POSITION_DELTA;
+  stepper.moveTo( j ); // set new target position
+  while (stepper.currentPosition() != j  ) // Full speed back
+    stepper.run();
+
+  stepper.stop();
+}
+
 void loop() {
 
   val = digitalRead(3);
@@ -53,20 +71,9 @@ void loop() {
   if (val == LOW && k < PUSH_MAX ) {
     Serial.println("Trigger detected");
     digitalWrite(8, LOW);  // Enable Motor
-    i = stepper.currentPosition() - PUSH_POSITION_DELTA;
-    stepper.moveTo(  i );  // set target position + current position
-    while (stepper.currentPosition() != i) // Full speed up to 400 + current position
-      stepper.run();
-
-    stepper.stop();
+    push();
     delay(500);
-
-    j = stepper.currentPosition() + PULL_POSITION_DELTA;
-    stepper.moveTo( j ); // set new target position
-    while (stepper.currentPosition() != j  ) // Full speed back
-      stepper.run();
-
-    stepper.stop();
+    pull();
     digitalWrite(8, HIGH);  // disable motor
     // wait until pulse end. only 1 push for each high
     while (digitalRead(3) == LOW)
@@ -119,6 +126,19 @@ void loop() {
        
       digitalWrite(8, HIGH); // disable motor
       k=0;
+    }
+
+    // Test
+    if (incomingByte == 'T') {
+      for (int t = 0; t < 40; t++) {
+        digitalWrite(8, LOW);  // Enable Motor
+        push();
+        delay(500);
+        pull();
+        digitalWrite(8, HIGH);  // disable Motor
+
+        delay(500);
+      }
     }
 
   }
