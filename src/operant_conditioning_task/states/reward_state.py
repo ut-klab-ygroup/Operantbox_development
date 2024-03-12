@@ -9,6 +9,11 @@ import time
 
 from transitions import State
 
+from pathlib import Path
+import sys
+sys.path.append(str(Path(__file__).resolve().parent.parent))
+
+from music import speaker
 
 class RewardState(State):
     """
@@ -63,7 +68,9 @@ class RewardState(State):
         self._task_gpio.switch_reward_led('ON')
 
         # 報酬用ブザーを鳴らします。
-        self._task_gpio.trigger_reward_buzzer()
+        #self._task_gpio.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/sho/Operantbox_development/src/operant_conditioning_task/music/880Hz_sin_wave.wav")
 
         # シリンジ ポンプを駆動します。
         self._task_gpio.trigger_reward_pump()
@@ -73,3 +80,6 @@ class RewardState(State):
 
         # 報酬用 LED を消灯します。
         self._task_gpio.switch_reward_led('OFF')
+
+        #WAVファイルの停止
+        speaker.stop_wav()
