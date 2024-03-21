@@ -13,10 +13,11 @@ def stop_wav():
 
 if __name__ == "__main__":
     # WAVファイルのパスを指定
-    wav_file_path = "/home/sho/Operantbox_development/src/operant_conditioning_task/music/440Hz_sin_wave.wav"
+    wav_file_path = "/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav"
 
     # WAVファイルを再生
     play_wav(wav_file_path)
 
     time.sleep(5)
-    
+
+    stop_wav()
