@@ -17,3 +17,6 @@ if __name__ == "__main__":
 
     # WAVファイルを再生
     play_wav(wav_file_path)
+
+    time.sleep(5)
+    
