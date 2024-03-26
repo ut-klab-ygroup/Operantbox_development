@@ -76,7 +76,7 @@ class OperantConditioningModel:
         # 状態処理オブジェクトと状態遷移のリストを渡して、ステート マシンを生成します。
         self.state_machine = Machine(model=self, states=states, transitions=transitions, initial=states[0],
                                      auto_transitions=False, ordered_transitions=False,
-                                     send_event=True, queued=False)
+                                     send_event=True, queued=True)
 
     # ===== 遷移コールバック メソッド =====
 
