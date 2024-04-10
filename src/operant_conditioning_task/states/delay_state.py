@@ -77,7 +77,9 @@ class DelayState(State):
 
         # self.wait_time_in_s で指定した期間で待機します。
         start_time = time.perf_counter()
-        while time.perf_counter() - start_time <= phase_settings.wait_time_in_s:
+        wait_list = phase_settings.wait_time_list
+        wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
+        while time.perf_counter() - start_time <= wait_time:
 
             # nose poke 行動が検出された場合、課題に失敗したとみなします。
             if self._task_gpio.is_nose_poked:

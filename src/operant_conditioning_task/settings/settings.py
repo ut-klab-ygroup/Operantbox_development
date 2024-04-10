@@ -173,6 +173,7 @@ class PhaseSettings:
         self.is_lick_wait = phase_settings_dict['is_lick_wait']
         self.is_perservative = phase_settings_dict['is_perservative']
         self.wait_time_in_s = phase_settings_dict['wait_time_in_s']
+        self.wait_time_list = phase_settings_dict['wait_time_list']
         self.timeout_in_s = phase_settings_dict['timeout_in_s']
         self.stimulus_duration_in_s = phase_settings_dict['stimulus_duration_in_s']
         self.limited_hold_in_s = phase_settings_dict['limited_hold_in_s']
