@@ -30,12 +30,19 @@ class TaskResults:
         # 実験の開始時刻 (UNIX 時間、sec) です。
         self._start_time = 0
 
+
         # Lick 行動の時系列データです。
         self._lick_results = dict()
         self._lick_results['elapsed_time'] = []     # 実験開始からの経過時間 (msec; int)
         self._lick_results['trial_num'] = []        # 試行番号 (int)
         self._lick_results['state_name'] = []       # 状態の名前 (str)
         self._lick_results['response_time'] = []    # キューの呈示から lick 行動までの反応時間 (msec)
+
+        # delay statesにおけるlick時刻のデータ
+        self._multiple_licks_results = dict()
+        self._multiple_licks_results['trial_num'] = []     # 実験開始からの経過時間 (msec; int)
+        self._multiple_licks_results['lick_times'] = []        # 試行番号 (int)
+        self._multiple_licks_results['state_name'] = []       # 状態の名前 (str)
 
         # Nose poke 行動の時系列データです。
         self._nose_poke_results = dict()
@@ -60,6 +67,11 @@ class TaskResults:
 
         # 結果ファイルに保存します。
         self._results_file_writer.writerow([elapsed_time, trial_num, state_name, 'Lick', response_time, ''])
+    # delay stateにおけるlicksを記録する
+    def store_multiple_licks_results(self, trial_num, lick_time, state_name):
+        self._multiple_licks_results['trial_num'].append(trial_num)    # 実験開始からの経過時間 (msec; int)
+        self._multiple_licks_results['lick_times'].append(lick_time)      # 試行番号 (int)
+        self._multiple_licks_results['state_name'].append(state_name)
 
     # Nose poke 行動の結果を記録します。
     def store_nose_poke_results(self, unix_time, trial_num, state_name, target_num, is_correct):

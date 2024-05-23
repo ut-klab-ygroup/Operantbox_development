@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 # ステート マシンで使用する状態が定義されたモジュールです。
 from states.initial_state import InitialState
 from states.lick_state import LickState
-from states.delay_state import DelayState
+from operant_conditioning_task.states.delay_state_initial_code import DelayState
 from states.nose_poke_state import NosePokeState
 from states.reward_state import RewardState
 from states.timeout_state import TimeoutState
@@ -129,10 +129,15 @@ class OperantConditioningModel:
         # DelayState オブジェクトでない場合はエラーを出します。
         if not isinstance(event.state, DelayState):
             raise OperantConditioningError('This is not a DelayState object.')
-
         # DelayState の結果を取得します。
         delay_state_results = event.state.results
 
+        try:
+            self._task_results.store_multiple_licks_results(self._settings.current_trial_num, delay_state_results['lick_time_list'], 'Delay_State')
+        except:
+            print("No Lick in this trial{}".format(self._settings.current_trial_num))
+            pass
+            
         # 次の状態に遷移します。
         if delay_state_results['state_result'] == TaskResult.Success:
             self.trigger('DelayState->NosePokeState')

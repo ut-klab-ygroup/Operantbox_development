@@ -10,6 +10,7 @@ import time
 from transitions import State
 
 from states.task_result_enum import TaskResult
+from state_machine.task_results import TaskResults #作業ディレクトリ的にできるか？
 
 
 class DelayState(State):
@@ -47,7 +48,8 @@ class DelayState(State):
 
         # 状態の結果データを初期化します。
         self.results = dict()
-
+        
+        #以下はdebugする時用
         if self._settings.debug['skip_state']:
             time.sleep(2)
             self.results['state_result'] = TaskResult.Success
@@ -79,15 +81,26 @@ class DelayState(State):
         start_time = time.perf_counter()
         wait_list = phase_settings.wait_time_list
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
+        lick_time_list = []
         while time.perf_counter() - start_time <= wait_time:
-
+            """
+            #現状の実装では不要、一旦外す、。
+            #将来的には、現在のphaseを指定するor is_persevativeをつけるだけでいいか？
             # nose poke 行動が検出された場合、課題に失敗したとみなします。
-            if self._task_gpio.is_nose_poked:
+            if self._task_gpio.is_nose_poked:# and phase_settings.is_perservative:
                 self.results['state_result'] = TaskResult.Failure
                 self._logger.info(self.name + ': Failure.')
                 return
-
+            """
+            if self._task_gpio.is_licked:
+                #この処理によって、resultsの中にlick_timeが格納される。
+                self._task_gpio.get_lick_results(self.results)
+                lick_time_list.append(self.results['lick_time'])
+                #self.results['state_result'] = TaskResult.Success
+                self._logger.info(self.name + 'Lick detected')
+                
             time.sleep(0.001)
 
         self.results['state_result'] = TaskResult.Success
+        self.results['lick_time_list'] = lick_time_list
         self._logger.info(self.name + ': Success.')
