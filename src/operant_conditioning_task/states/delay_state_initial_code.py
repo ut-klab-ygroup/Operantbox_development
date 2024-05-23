@@ -47,7 +47,8 @@ class DelayState(State):
 
         # 状態の結果データを初期化します。
         self.results = dict()
-
+        
+        #以下はdebugする時用
         if self._settings.debug['skip_state']:
             time.sleep(2)
             self.results['state_result'] = TaskResult.Success
