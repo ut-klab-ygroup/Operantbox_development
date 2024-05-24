@@ -60,7 +60,7 @@ class RewardState(State):
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
         pass
-
+    """
     # 報酬を付与します。
     def _give_reward(self):
 
@@ -83,3 +83,27 @@ class RewardState(State):
 
         #WAVファイルの停止
         speaker.stop_wav()
+    """
+
+    def _give_reward(self):
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+
+        # 報酬用ブザーを鳴らします。
+        self._task_gpio.trigger_reward_buzzer()
+
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+        # すべての動作が1秒間続くように待機します。
+        time.sleep(1)
+
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+
+        # ブザーの停止（もし必要であればコードを追加）
+        self._task_gpio.stop_reward_buzzer()
+
+        # WAVファイルの停止（もし音声ファイルの再生があれば）
+        speaker.stop_wav()
+
