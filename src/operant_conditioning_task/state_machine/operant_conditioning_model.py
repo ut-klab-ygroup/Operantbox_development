@@ -133,7 +133,7 @@ class OperantConditioningModel:
         delay_state_results = event.state.results
 
         try:
-            self._task_results.store_multiple_licks_results(self._settings.current_trial_num, delay_state_results['lick_time_list'], 'Delay_State')
+            self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, delay_state_results['lick_time_list'], 'Delay_State')
         except:
             print("No Lick in this trial{}".format(self._settings.current_trial_num))
             pass
@@ -155,6 +155,14 @@ class OperantConditioningModel:
 
         # NosePokeState の結果を取得します。
         results = event.state.results
+
+        try:
+            #nose pokeとlickは分けるべきか？
+            #self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
+            self._task_results.store_multiple_nose_pokes_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
+        except:
+            print("No Lick in this trial{}".format(self._settings.current_trial_num))
+            pass
 
         # 次の状態に遷移します。
         if results['state_result'] in [TaskResult.Success, TaskResult.Failure]:
