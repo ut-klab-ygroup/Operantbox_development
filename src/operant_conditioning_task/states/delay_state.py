@@ -107,6 +107,14 @@ class DelayState(State):
             is_licked が True になるたびに False にすればいいかというとセンサーのチャタリングなどの問題があるので単純にはいかなくて要検討です。
             """
                 
+            """
+            2024/5/24 大石
+            _task_gpio.is_licled はリックセンサーに反応があった時にTrueになるのですが、Falseにするのは読み出し側が行う必要があります。
+            例えば lick_state.py では enter() の中で _task_gpio.reset_state() を呼び出して is_licked を False にしてから
+            _monitor_lick_task() を行い, is_licked が True になるのを監視しています。
+            このコードでは is_licked を False にしていないので毎ループで記録されてしまう可能性があります。
+            is_licked が True になるたびに False にすればいいかというとセンサーのチャタリングなどの問題があるので単純にはいかなくて要検討です。
+            """
             time.sleep(0.001)
 
         self.results['state_result'] = TaskResult.Success
