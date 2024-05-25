@@ -88,6 +88,11 @@ class NosePokeState(State):
                 if self._task_gpio.is_nose_poked:
                     self._task_gpio.get_nose_poke_results(self.results)
                     target_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
+
+                    self._task_gpio.reset_state(self.name)
+                    #この遅延時間については要検討, 一括操作可能になると良いか。
+                    time.sleep(0.05)
+                    
                     self.results['target_num'] = target_num
 
                     nose_poke_time_list.append(self.results['nose_poke_time'])
@@ -114,11 +119,16 @@ class NosePokeState(State):
                     
                 time.sleep(0.001)
 
-
+                #nosepokeとlickの間には常に、一定間隔があく(>0.5s?)ため別処理で問題ない
                 if self._task_gpio.is_licked:
                     #この処理によって、resultsの中にlick_timeが格納される。
                     self._task_gpio.get_lick_results(self.results)
                     lick_time_list.append(self.results['lick_time'])
+
+                    self._task_gpio.reset_state(self.name)
+                    #この遅延時間については要検討, 一括操作可能になると良いか。
+                    time.sleep(0.05)
+                    
                     #self.results['state_result'] = TaskResult.Success
                     self._logger.info(self.name + 'Lick detected')
                     
