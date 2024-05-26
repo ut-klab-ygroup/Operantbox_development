@@ -15,7 +15,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 # ステート マシンで使用する状態が定義されたモジュールです。
 from states.initial_state import InitialState
 from states.lick_state import LickState
-from operant_conditioning_task.states.delay_state_initial_code import DelayState
+from states.delay_state_initial_code import DelayState
 from states.nose_poke_state import NosePokeState
 from states.reward_state import RewardState
 from states.timeout_state import TimeoutState

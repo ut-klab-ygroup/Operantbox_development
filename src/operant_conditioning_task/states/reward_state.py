@@ -102,7 +102,7 @@ class RewardState(State):
         self._task_gpio.switch_reward_led('OFF')
 
         # ブザーの停止（もし必要であればコードを追加）
-        self._task_gpio.stop_reward_buzzer()
+        #self._task_gpio.stop_reward_buzzer()
 
         # WAVファイルの停止（もし音声ファイルの再生があれば）
         speaker.stop_wav()
