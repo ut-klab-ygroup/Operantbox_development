@@ -95,14 +95,14 @@ class DelayState(State):
             if self._task_gpio.is_licked:
                 #この処理によって、resultsの中にlick_timeが格納される。
                 self._task_gpio.get_lick_results(self.results)
-
+                self._logger.info(self.name + 'Lick detected')
+                lick_time_list.append(self.results['lick_time'])
+                time.sleep(0.01)
                 self._task_gpio.reset_state(self.name)
                 #この遅延時間については要検討, 一括操作可能になると良いか。
-                time.sleep(0.05)
-                
-                lick_time_list.append(self.results['lick_time'])
+                time.sleep(0.01)
                 #self.results['state_result'] = TaskResult.Success
-                self._logger.info(self.name + 'Lick detected')
+                
             """
             2024/5/24 大石
             _task_gpio.is_licled はリックセンサーに反応があった時にTrueになるのですが、Falseにするのは読み出し側が行う必要があります。
