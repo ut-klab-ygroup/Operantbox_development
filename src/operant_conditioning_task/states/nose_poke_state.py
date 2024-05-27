@@ -88,7 +88,7 @@ class NosePokeState(State):
                 if self._task_gpio.is_nose_poked:
                     self._task_gpio.get_nose_poke_results(self.results)
                     target_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
-
+　　　　　　　　　　　　　time.sleep(0.05)
                     self._task_gpio.reset_state(self.name)
                     #この遅延時間については要検討, 一括操作可能になると良いか。
                     time.sleep(0.05)
@@ -125,10 +125,10 @@ class NosePokeState(State):
                     self._task_gpio.get_lick_results(self.results)
                     lick_time_list.append(self.results['lick_time'])
                     self._logger.info(self.name + 'Lick detected')
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     self._task_gpio.reset_state(self.name)
                     #この遅延時間については要検討, 一括操作可能になると良いか。
-                    time.sleep(0.01)
+                    time.sleep(0.05)
                     
                     #self.results['state_result'] = TaskResult.Success
                     
