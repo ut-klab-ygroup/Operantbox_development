@@ -58,6 +58,10 @@ class TaskGpio:
         self.is_nose_poked = False
         self._nose_poke_time = -1
         self._nose_poke_selected_index = -1
+        # 複数回 detect_lick を呼び出す
+        for _ in range(15):  # 呼び出し回数を設定で指定
+            self._detect_lick()
+            time.sleep(0.01)
 
     # LED クラスを用いて、デバイスのスイッチング ('ON' と 'OFF') と点滅 ('Blink') を行います。
     def _switch_single_device(self, device, status, log=None):
@@ -104,7 +108,7 @@ class TaskGpio:
                 self.is_licked = True
                 self._lick_time = time.time()
                 self._logger.info(self._state_name + ': Licked.')
-            
+                time.sleep(0.01)
         self._lick_sensor.when_pressed = _lick_callback
 
     # target_index_list で指定したインデックスに対応する nose poke ターゲットの

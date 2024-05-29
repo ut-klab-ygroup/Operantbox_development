@@ -90,7 +90,9 @@ class RewardState(State):
         self._task_gpio.switch_reward_led('ON')
 
         # 報酬用ブザーを鳴らします。
-        self._task_gpio.trigger_reward_buzzer()
+        #self._task_gpio.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
 
         # シリンジ ポンプを駆動します。
         self._task_gpio.trigger_reward_pump()

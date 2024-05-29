@@ -60,7 +60,12 @@ class DelayState(State):
         phase_settings = self._settings.get_phase_settings()
 
         # GPIO の現在の状態を再設定します。
+        
         self._task_gpio.reset_state(self.name)
+        self._task_gpio._detect_lick()
+        self._task_gpio.reset_state(self.name)
+        self._task_gpio._detect_lick()
+
 
         # 待機課題を監視します。
         self._monitor_wait_task(phase_settings)
@@ -92,13 +97,20 @@ class DelayState(State):
                 self._logger.info(self.name + ': Failure.')
                 return
             """
+            self._task_gpio.reset_state(self.name)
+            self._task_gpio._detect_lick()
             if self._task_gpio.is_licked:
-                #この処理によって、resultsの中にlick_timeが格納される。
                 self._task_gpio.get_lick_results(self.results)
-                self._logger.info(self.name + 'Lick detected')
+                self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
                 lick_time_list.append(self.results['lick_time'])
+                # GPIO の現在の状態を再設定します。
+                #この処理によって、resultsの中にlick_timeが格納される。
+                #self._task_gpio.get_lick_results(self.results)
+                #self._logger.info(self.name + 'Lick detected')
+                #lick_time_list.append(self.results['lick_time'])
                 time.sleep(0.01)
                 self._task_gpio.reset_state(self.name)
+                self._task_gpio._detect_lick()
                 #この遅延時間については要検討, 一括操作可能になると良いか。
                 time.sleep(0.01)
                 #self.results['state_result'] = TaskResult.Success
@@ -128,4 +140,5 @@ class DelayState(State):
 
         self.results['state_result'] = TaskResult.Success
         self.results['lick_time_list'] = lick_time_list
+        print(lick_time_list)
         self._logger.info(self.name + ': Success.')
