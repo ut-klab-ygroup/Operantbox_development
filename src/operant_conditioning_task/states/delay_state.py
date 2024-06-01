@@ -6,6 +6,7 @@
 """
 
 import time
+import signal
 
 from transitions import State
 
@@ -77,7 +78,54 @@ class DelayState(State):
         pass
 
     # 待機課題を監視します。
+    
+
+    def _signal_handler(signum, frame, self, wait_time, lick_time_list, start_time):
+        # Check the elapsed time to determine if the monitoring period has finished.
+        if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
+            # Stop the alarm timer.
+            signal.setitimer(signal.ITIMER_REAL, 0)
+            # Record the success and log it.
+            self.results['state_result'] = TaskResult.Success
+            self.results['lick_time_list'] = lick_time_list
+            self._logger.info(f"{self.name}: Success")# with lick times: {lick_time_list}")
+        else:
+            # Check if a lick has been detected.
+            #self._task_gpio._detect_lick()
+            if self._task_gpio.is_licked:
+                #current_time = time.perf_counter()
+                self._task_gpio.get_lick_results(self.results)
+                self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
+                #lick_time_list.append(current_time - start_time)
+                lick_time_list.append(self.results['lick_time'])
+                #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
+                self._task_gpio.reset_state(self.name)
+
     def _monitor_wait_task(self, phase_settings):
+        # Turn off the chamber light.
+        self._task_gpio.switch_chamber_light('OFF')
+        start_time = time.perf_counter()
+        wait_list = phase_settings.wait_time_list
+        wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
+        lick_time_list = []
+
+        while time.perf_counter() - start_time <= wait_time:
+
+        # Set the signal handler for SIGALRM.
+        handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
+        #handler = functools.partial(signal_handler, self=self, phase_settings=phase_settings, lick_time_list=lick_time_list, start_time=start_time)
+        signal.signal(signal.SIGALRM, handler)
+
+        # Configure the timer to fire every 0.1 seconds.
+        signal.setitimer(signal.ITIMER_REAL, 0.1, 0.1)
+
+        # Wait for the signal handler to end the monitoring.
+        while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
+            time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
+
+# Note: This code assumes that `TaskResult` and `_task_gpio` are defined within the class that contains `_monitor_wait_task`.
+
+    def __monitor_wait_task(self, phase_settings):
 
         # チャンバーの照明を消灯します。
         self._task_gpio.switch_chamber_light('OFF')
