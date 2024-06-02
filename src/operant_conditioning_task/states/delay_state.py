@@ -12,7 +12,7 @@ from transitions import State
 
 from states.task_result_enum import TaskResult
 from state_machine.task_results import TaskResults #作業ディレクトリ的にできるか？
-
+import functools
 
 class DelayState(State):
     """
@@ -112,17 +112,17 @@ class DelayState(State):
 
         while time.perf_counter() - start_time <= wait_time:
 
-        # Set the signal handler for SIGALRM.
-        #handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
-        handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
-        signal.signal(signal.SIGALRM, handler)
+            # Set the signal handler for SIGALRM.
+            #handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
+            handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
+            signal.signal(signal.SIGALRM, handler)
 
-        # Configure the timer to fire every 0.1 seconds.
-        signal.setitimer(signal.ITIMER_REAL, 0.1, 0.1)
+            # Configure the timer to fire every 0.1 seconds.
+            signal.setitimer(signal.ITIMER_REAL, 0.1, 0.1)
 
-        # Wait for the signal handler to end the monitoring.
-        while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
-            time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
+            # Wait for the signal handler to end the monitoring.
+            while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
+                time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
 
 # Note: This code assumes that `TaskResult` and `_task_gpio` are defined within the class that contains `_monitor_wait_task`.
 
