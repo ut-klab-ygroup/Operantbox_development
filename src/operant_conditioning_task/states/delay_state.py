@@ -80,7 +80,7 @@ class DelayState(State):
     # 待機課題を監視します。
     
 
-    def _signal_handler(signum, frame, self, wait_time, lick_time_list, start_time):
+    def _signal_handler(self, signum, frame, wait_time, lick_time_list, start_time):
         # Check the elapsed time to determine if the monitoring period has finished.
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
@@ -92,6 +92,19 @@ class DelayState(State):
         else:
             # Check if a lick has been detected.
             #self._task_gpio._detect_lick()
+            if self._task_gpio._lick_sensor.is_pressed:
+                self._task_gpio.get_lick_results(self.results)
+                self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
+                    ##lick_timeの検出は01で行っても良い。
+                #lick_time_list.append(current_time - start_time)
+                lick_time_list.append(self.results['lick_time'])
+                self._task_gpio.reset_state(self.name) 
+                    #reset_stateをここで行わないとlick_timeが更新されない。
+                    #todo：調査@240602
+                        ##→そもそもresultsを使わなければチャタリングの問題も生じなさそうで20hzでの検出も可能か？それかsignalハンドラーによる呼び出しそのものでチャタリング的なこと起こる？？
+                #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
+                    #time.sleep(1)
+            """
             if self._task_gpio.is_licked:
                 #current_time = time.perf_counter()
                 self._task_gpio.get_lick_results(self.results)
@@ -100,7 +113,12 @@ class DelayState(State):
                 lick_time_list.append(self.results['lick_time'])
                 #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
                 self._task_gpio.reset_state(self.name)
-                self._task_gpio.is_licked = False 
+                #self._task_gpio._detect_lick()
+                #self._task_gpio.is_licked = False 
+            """
+            
+            
+            
 
     def _monitor_wait_task(self, phase_settings):
         # Turn off the chamber light.

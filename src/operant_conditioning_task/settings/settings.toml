@@ -4,7 +4,7 @@
 phase_list = ["phase1", "phase2", "phase3", "phase4", "phase5_1", "phase5_2", "phase5_3", "phase5_4", "phase5_5", "phase5_6", "phase6"]
 
 # 開始設定フェーズの名前です。
-current_phase = "phase2"
+current_phase = "phase1"
 
 # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
 num_trials_before = 10
