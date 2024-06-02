@@ -100,6 +100,7 @@ class DelayState(State):
                 lick_time_list.append(self.results['lick_time'])
                 #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
                 self._task_gpio.reset_state(self.name)
+                self._task_gpio.is_licked = False 
 
     def _monitor_wait_task(self, phase_settings):
         # Turn off the chamber light.
