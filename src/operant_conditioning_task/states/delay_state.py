@@ -113,8 +113,8 @@ class DelayState(State):
         while time.perf_counter() - start_time <= wait_time:
 
         # Set the signal handler for SIGALRM.
-        handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
-        #handler = functools.partial(signal_handler, self=self, phase_settings=phase_settings, lick_time_list=lick_time_list, start_time=start_time)
+        #handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
+        handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
         signal.signal(signal.SIGALRM, handler)
 
         # Configure the timer to fire every 0.1 seconds.
