@@ -93,6 +93,7 @@ class DelayState(State):
             # Check if a lick has been detected.
             #self._task_gpio._detect_lick()
             if self._task_gpio._lick_sensor.is_pressed:
+                self._task_gpio._lick_time = time.time()
                 self._task_gpio.get_lick_results(self.results)
                 self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
                     ##lick_timeの検出は01で行っても良い。
@@ -143,7 +144,7 @@ class DelayState(State):
                 time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
 
 # Note: This code assumes that `TaskResult` and `_task_gpio` are defined within the class that contains `_monitor_wait_task`.
-
+    #この関数はおそらく削除で良い@240602
     def __monitor_wait_task(self, phase_settings):
 
         # チャンバーの照明を消灯します。

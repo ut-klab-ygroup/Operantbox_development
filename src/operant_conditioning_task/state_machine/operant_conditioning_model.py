@@ -135,8 +135,9 @@ class OperantConditioningModel:
 
         try:
             self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, delay_state_results['lick_time_list'], 'Delay_State')
+            print("Succesfully saved Lick data in this trial{}s Delay State".format(self._settings.current_trial_num))
         except:
-            print("No Lick in this trial{}".format(self._settings.current_trial_num))
+            print("No Lick in this trial{}s Delay State".format(self._settings.current_trial_num))
             pass
             
         # 次の状態に遷移します。
@@ -161,8 +162,9 @@ class OperantConditioningModel:
             #nose pokeとlickは分けるべきか？
             #self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
             self._task_results.store_multiple_nose_pokes_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
+            print("Succesfully saved Lick data in this trial{}s NosePoke State".format(self._settings.current_trial_num))
         except:
-            print("No Lick in this trial{}".format(self._settings.current_trial_num))
+            print("No Lick in this trial{}'s NosePoke State".format(self._settings.current_trial_num))
             pass
 
         # 次の状態に遷移します。
