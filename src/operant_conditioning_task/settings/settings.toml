@@ -44,13 +44,13 @@ stimulus_duration_in_s = 0 #ここは0でいいのか要確認。
 x = [[2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4]]
 is_nose_poke_skip = false
 is_lick_wait = false #lick_stateはskip
-delay_state_skip = false
-reward_state_skip = true
+delay_state_skip = true
+reward_state_skip = 1
 is_perservative = false # delay stateでのNPは無関係。
-wait_time_in_s = 0.1
+wait_time_in_s = 0
 wait_time_list = [0]
 timeout_in_s = 0
-limited_hold_in_s = 60 
+limited_hold_in_s = 60
 stimulus_duration_in_s = 60 #phase2ではこれをtrialの長さにする #ここが-1の場合は、無制限を意味したりする。
 
 [phase3]

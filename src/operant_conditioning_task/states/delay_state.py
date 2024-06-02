@@ -122,7 +122,9 @@ class DelayState(State):
             
 
     def _monitor_wait_task(self, phase_settings):
-        if phase_settings.delay_state_skip:
+        if phase_settings.wait_time_in_s == 0:
+        #phase_settings.delay_state_skip:
+            print("skip")
             self.results['state_result'] = TaskResult.Skipped
             self._logger.info(self.name + ': Skipped.')
             return

@@ -145,6 +145,8 @@ class OperantConditioningModel:
             self.trigger('DelayState->NosePokeState')
         elif delay_state_results['state_result'] == TaskResult.Failure:
             self.trigger('Timeout')
+        elif delay_state_results['state_result'] == TaskResult.Skipped:
+            self.trigger('DelayState->NosePokeState')
         else:
             raise OperantConditioningError('The results of DelayState are something wrong.')
 
@@ -158,13 +160,16 @@ class OperantConditioningModel:
         # NosePokeState の結果を取得します。
         results = event.state.results
 
-        try:
+        #try:
             #nose pokeとlickは分けるべきか？
-            #self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
-            self._task_results.store_multiple_nose_pokes_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
+        #    ("try save")
+        print(results)
+        try:
+            self._task_results.store_multiple_licks_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
+            self._task_results.store_multiple_nose_pokes_results_for_trial(self._settings.current_trial_num, results['nose_poke_time_list'], results['nose_poke_hole_number_list'],results['nose_poke_correct_time_list'],results['nose_poke_hole_number_correct_list'],'Nose_Poke_State')
             print("Succesfully saved Lick data in this trial{}s NosePoke State".format(self._settings.current_trial_num))
         except:
-            print("No Lick and Lick in this trial{}'s NosePoke State".format(self._settings.current_trial_num))
+            print("No Lick and Lick or Error in saving in this trial{}'s NosePoke State".format(self._settings.current_trial_num))
             pass
 
         # 次の状態に遷移します。

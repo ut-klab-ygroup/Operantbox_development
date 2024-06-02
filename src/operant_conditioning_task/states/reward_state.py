@@ -54,7 +54,7 @@ class RewardState(State):
 
         phase_settings = self._settings.get_phase_settings()
 
-        if phase_settings.delay_state_skip:
+        if phase_settings.reward_state_skip == 1:
             #self.results['state_result'] = TaskResult.Skipped
             self._logger.info(self.name + ': Skipped.')
             return

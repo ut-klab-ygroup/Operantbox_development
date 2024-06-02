@@ -148,7 +148,6 @@ class TaskGpio:
                 pin_num = int(pin_name.replace('GPIO', ''))
                 selected_index = np.where(pin_num == self._nose_poke_pin_assignment)
                 if selected_index[0].size > 0:
-                    print(selected_index)
                     self._nose_poke_selected_index = selected_index[0][0]
                 self._logger.info(self._state_name + ': Nose-poked.')
 
