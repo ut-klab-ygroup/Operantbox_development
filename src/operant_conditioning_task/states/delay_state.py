@@ -122,6 +122,11 @@ class DelayState(State):
             
 
     def _monitor_wait_task(self, phase_settings):
+        if phase_settings.delay_state_skip:
+            self.results['state_result'] = TaskResult.Skipped
+            self._logger.info(self.name + ': Skipped.')
+            return
+
         # Turn off the chamber light.
         self._task_gpio.switch_chamber_light('OFF')
         start_time = time.perf_counter()

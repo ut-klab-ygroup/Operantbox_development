@@ -164,7 +164,7 @@ class OperantConditioningModel:
             self._task_results.store_multiple_nose_pokes_results_for_trial(self._settings.current_trial_num, results['lick_time_list'], 'Nose_Poke_State')
             print("Succesfully saved Lick data in this trial{}s NosePoke State".format(self._settings.current_trial_num))
         except:
-            print("No Lick in this trial{}'s NosePoke State".format(self._settings.current_trial_num))
+            print("No Lick and Lick in this trial{}'s NosePoke State".format(self._settings.current_trial_num))
             pass
 
         # 次の状態に遷移します。

@@ -52,6 +52,13 @@ class RewardState(State):
         # GPIO の現在の状態を再設定します。
         self._task_gpio.reset_state(self.name)
 
+        phase_settings = self._settings.get_phase_settings()
+
+        if phase_settings.delay_state_skip:
+            #self.results['state_result'] = TaskResult.Skipped
+            self._logger.info(self.name + ': Skipped.')
+            return
+
         # 報酬を付与します。
         self._give_reward()
 

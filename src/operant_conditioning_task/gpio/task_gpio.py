@@ -9,6 +9,7 @@ import time
 
 from gpiozero import LED, LEDBoard, Button
 import numpy as np
+from music import speaker
 
 
 class TaskGpio:
@@ -147,6 +148,7 @@ class TaskGpio:
                 pin_num = int(pin_name.replace('GPIO', ''))
                 selected_index = np.where(pin_num == self._nose_poke_pin_assignment)
                 if selected_index[0].size > 0:
+                    print(selected_index)
                     self._nose_poke_selected_index = selected_index[0][0]
                 self._logger.info(self._state_name + ': Nose-poked.')
 
@@ -165,6 +167,28 @@ class TaskGpio:
     # 報酬用ポンプを駆動します。
     def trigger_reward_pump(self):
         self._trigger_single_device(self._reward_pump)
+
+    def _give_reward(self):
+
+        # 報酬用 LED を点灯します。
+        self.switch_reward_led('ON')
+
+        # 報酬用ブザーを鳴らします。
+        self.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+
+        # シリンジ ポンプを駆動します。
+        self.trigger_reward_pump()
+
+        # 報酬用 LED の点灯時間を調整します。
+        time.sleep(1)
+
+        # 報酬用 LED を消灯します。
+        self.switch_reward_led('OFF')
+
+        #WAVファイルの停止
+        speaker.stop_wav()
     
 
 # GPIO クラスのテスト

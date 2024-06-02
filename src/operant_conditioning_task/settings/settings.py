@@ -60,7 +60,7 @@ class Settings:
         # ===== 固定の設定パラメーター =====
 
         # nose poke に使用するターゲットの番号です。
-        self.NOSE_POKE_TARGETS = np.array([1, 2, 3, 4, 5])
+        self.NOSE_POKE_TARGETS = np.array([5, 4, 3, 2, 1])
 
         # Raspberry Pi の GPIO の端子の割り当てです。
         self.pin_assignment = dict()
@@ -171,6 +171,8 @@ class PhaseSettings:
         self.x = phase_settings_dict['x']
         self.is_nose_poke_skip = phase_settings_dict['is_nose_poke_skip']
         self.is_lick_wait = phase_settings_dict['is_lick_wait']
+        self.delay_state_skip = phase_settings_dict['delay_state_skip']
+        self.reward_state_skip =phase_settings_dict['reward_state_skip']
         self.is_perservative = phase_settings_dict['is_perservative']
         self.wait_time_in_s = phase_settings_dict['wait_time_in_s']
         self.wait_time_list = phase_settings_dict['wait_time_list']
@@ -192,7 +194,7 @@ if __name__ == '__main__':
         if key == '_phase_settings_dict':
             for phase_name, phase_settings in val.items():
                 print(f'{phase_name} = [x = {phase_settings.x}, is_nose_poke_skip = {phase_settings.is_nose_poke_skip}, '
-                      f'is_lick_wait = {phase_settings.is_lick_wait}, is_perservative = {phase_settings.is_perservative}, '
+                      f'is_lick_wait = {phase_settings.is_lick_wait},delay_state_skip = {phase_settings.delay_state_skip},reward_state_skip = {phase_settings.reward_state_skip}, is_perservative = {phase_settings.is_perservative}, '
                       f'wait_time_in_s = {phase_settings.wait_time_in_s}, timeout_in_s = {phase_settings.timeout_in_s}, '
                       f'limited_hold_in_s = {phase_settings.limited_hold_in_s}, '
                       f'stimulus_duration_in_s = {phase_settings.stimulus_duration_in_s}]')
