@@ -59,18 +59,11 @@ class DelayState(State):
 
         # フェーズ設定を取得します。
         phase_settings = self._settings.get_phase_settings()
-
         # GPIO の現在の状態を再設定します。
-        
         self._task_gpio.reset_state(self.name)
-        self._task_gpio._detect_lick()
-        self._task_gpio.reset_state(self.name)
-        self._task_gpio._detect_lick()
-
 
         # 待機課題を監視します。
         self._monitor_wait_task(phase_settings)
-
         self._logger.debug(self.name + ': Finished')
 
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。

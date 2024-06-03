@@ -9,7 +9,6 @@ import time
 
 from gpiozero import LED, LEDBoard, Button
 import numpy as np
-from music import speaker
 
 
 class TaskGpio:
@@ -59,10 +58,6 @@ class TaskGpio:
         self.is_nose_poked = False
         self._nose_poke_time = -1
         self._nose_poke_selected_index = -1
-        # 複数回 detect_lick を呼び出す
-        for _ in range(15):  # 呼び出し回数を設定で指定
-            self._detect_lick()
-            time.sleep(0.01)
 
     # LED クラスを用いて、デバイスのスイッチング ('ON' と 'OFF') と点滅 ('Blink') を行います。
     def _switch_single_device(self, device, status, log=None):
@@ -109,7 +104,6 @@ class TaskGpio:
                 self.is_licked = True
                 self._lick_time = time.time()
                 self._logger.info(self._state_name + ': Licked.')
-                time.sleep(0.01)
         self._lick_sensor.when_pressed = _lick_callback
 
     # target_index_list で指定したインデックスに対応する nose poke ターゲットの
@@ -167,27 +161,6 @@ class TaskGpio:
     def trigger_reward_pump(self):
         self._trigger_single_device(self._reward_pump)
 
-    def _give_reward(self):
-
-        # 報酬用 LED を点灯します。
-        self.switch_reward_led('ON')
-
-        # 報酬用ブザーを鳴らします。
-        self.trigger_reward_buzzer()
-
-        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-
-        # シリンジ ポンプを駆動します。
-        self.trigger_reward_pump()
-
-        # 報酬用 LED の点灯時間を調整します。
-        time.sleep(1)
-
-        # 報酬用 LED を消灯します。
-        self.switch_reward_led('OFF')
-
-        #WAVファイルの停止
-        speaker.stop_wav()
     
 
 # GPIO クラスのテスト
