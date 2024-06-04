@@ -75,6 +75,11 @@ class DelayState(State):
 
     def _signal_handler(self, signum, frame, wait_time, lick_time_list, start_time):
         # Check the elapsed time to determine if the monitoring period has finished.
+        # trial開始後からちょうど5秒後にCS+報酬を提供する。
+        if time.perf_counter() - start_time >= 5 and not self.reward_given:
+            self._give_reward()
+            self.reward_given = True  # 報酬が与えられたことを記録
+
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -210,3 +215,25 @@ class DelayState(State):
         self.results['lick_time_list'] = lick_time_list
         print(lick_time_list)
         self._logger.info(self.name + ': Success.')
+# 報酬を付与します。
+    def _give_reward(self):
+
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+
+        # 報酬用ブザーを鳴らします。
+        self._task_gpio.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+        # 報酬用 LED の点灯時間を調整します。
+        time.sleep(1)
+
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+
+        #WAVファイルの停止
+        speaker.stop_wav()
