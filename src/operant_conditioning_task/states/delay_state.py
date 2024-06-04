@@ -100,23 +100,9 @@ class DelayState(State):
                 self._task_gpio.reset_state(self.name) 
                     #reset_stateをここで行わないとlick_timeが更新されない。
                     #todo：調査@240602
-                        ##→そもそもresultsを使わなければチャタリングの問題も生じなさそうで20hzでの検出も可能か？それかsignalハンドラーによる呼び出しそのものでチャタリング的なこと起こる？？
+                        ##→そもそもtask.gpioのresultsを使わなければチャタリングの問題も生じなさそうで20hzでの検出も可能か？それかsignalハンドラーによる呼び出しそのものでチャタリング的なこと起こる？？
                 #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
                     #time.sleep(1)
-            """
-            if self._task_gpio.is_licked:
-                #current_time = time.perf_counter()
-                self._task_gpio.get_lick_results(self.results)
-                self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
-                #lick_time_list.append(current_time - start_time)
-                lick_time_list.append(self.results['lick_time'])
-                #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
-                self._task_gpio.reset_state(self.name)
-                #self._task_gpio._detect_lick()
-                #self._task_gpio.is_licked = False 
-            """
-            
-            
             
 
     def _monitor_wait_task(self, phase_settings):
@@ -148,73 +134,6 @@ class DelayState(State):
             while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
                 time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
 
-# Note: This code assumes that `TaskResult` and `_task_gpio` are defined within the class that contains `_monitor_wait_task`.
-    #この関数はおそらく削除で良い@240602
-    def __monitor_wait_task(self, phase_settings):
-
-        # チャンバーの照明を消灯します。
-        self._task_gpio.switch_chamber_light('OFF')
-
-        # self.wait_time_in_s で指定した期間で待機します。
-        start_time = time.perf_counter()
-        wait_list = phase_settings.wait_time_list
-        wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
-        lick_time_list = []
-        while time.perf_counter() - start_time <= wait_time:
-            """
-            #現状の実装では不要、一旦外す、。
-            #将来的には、現在のphaseを指定するor is_persevativeをつけるだけでいいか？
-            # nose poke 行動が検出された場合、課題に失敗したとみなします。
-            if self._task_gpio.is_nose_poked:# and phase_settings.is_perservative:
-                self.results['state_result'] = TaskResult.Failure
-                self._logger.info(self.name + ': Failure.')
-                return
-            """
-            self._task_gpio.reset_state(self.name)
-            self._task_gpio._detect_lick()
-            if self._task_gpio.is_licked:
-                self._task_gpio.get_lick_results(self.results)
-                self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
-                lick_time_list.append(self.results['lick_time'])
-                # GPIO の現在の状態を再設定します。
-                #この処理によって、resultsの中にlick_timeが格納される。
-                #self._task_gpio.get_lick_results(self.results)
-                #self._logger.info(self.name + 'Lick detected')
-                #lick_time_list.append(self.results['lick_time'])
-                time.sleep(0.01)
-                self._task_gpio.reset_state(self.name)
-                self._task_gpio._detect_lick()
-                #この遅延時間については要検討, 一括操作可能になると良いか。
-                time.sleep(0.01)
-                #self.results['state_result'] = TaskResult.Success
-                
-            """
-            2024/5/24 大石
-            _task_gpio.is_licled はリックセンサーに反応があった時にTrueになるのですが、Falseにするのは読み出し側が行う必要があります。
-            例えば lick_state.py では enter() の中で _task_gpio.reset_state() を呼び出して is_licked を False にしてから
-            _monitor_lick_task() を行い, is_licked が True になるのを監視しています。
-            このコードでは is_licked を False にしていないので毎ループで記録されてしまう可能性があります。
-                →つまり永遠にlickが検出され続けてしまうということ。
-                    -チャタリングの問題を解決する
-                    -_task_gpioを外す？
-                -いずれにせよ、一定期間におけるlickを全て検出する必要がある。
-            is_licked が True になるたびに False にすればいいかというとセンサーのチャタリングなどの問題があるので単純にはいかなくて要検討です。
-
-            to 大石さん
-            コメントくださりありがとうございます。
-            実験で使用するために、各trialで複数のlickを検出できるようにする必要があります。現在の稼働中の実験システムに合わせる場合、20hzオーダーでのlickの検出が求められます。そのようにするためのアイデアは何かおもちでしょうか。
-            trial構造を変えて、stateをlick一回ごとに変えるのは、素人イメージ的にはcpuに負荷がかかりそうな気がしています。
-            仮にそうだとして、現在ここのファイルで試みられているように一つのstateで行われたlick全てを検出するために、上述していただいたチャタリングの問題をうまく回避する方法はありますでしょうか。
-            現状のtask_gpio.pyでは構造的に厳しいなどあればご指摘願いたいです。
-            相談内容が多く、大変恐縮ですが、何卒よろしくお願いいたします。
-            24/05/24            大久保 拝
-            """
-            time.sleep(0.001)
-
-        self.results['state_result'] = TaskResult.Success
-        self.results['lick_time_list'] = lick_time_list
-        print(lick_time_list)
-        self._logger.info(self.name + ': Success.')
 # 報酬を付与します。
     def _give_reward(self):
 
