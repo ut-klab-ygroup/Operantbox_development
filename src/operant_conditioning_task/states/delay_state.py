@@ -13,6 +13,8 @@ from transitions import State
 from states.task_result_enum import TaskResult
 from state_machine.task_results import TaskResults #作業ディレクトリ的にできるか？
 import functools
+import threading
+from music import speaker
 
 class DelayState(State):
     """
@@ -42,6 +44,8 @@ class DelayState(State):
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()
 
+        self.reward_given =False
+
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # 待機状態の処理を開始します。
     def enter(self, event_data):
@@ -61,10 +65,21 @@ class DelayState(State):
         phase_settings = self._settings.get_phase_settings()
         # GPIO の現在の状態を再設定します。
         self._task_gpio.reset_state(self.name)
-
         # 待機課題を監視します。
         self._monitor_wait_task(phase_settings)
         self._logger.debug(self.name + ': Finished')
+        
+
+    def start_reward_timer(self):
+        # スレッドを起動し、5秒後に報酬を与える
+        reward_thread = threading.Timer(5.0, self.give_reward)
+        reward_thread.start()
+
+    def give_reward(self):
+        if not self.reward_given:
+            self._give_reward()
+            self.reward_given = True
+            print("報酬を提供しました。")
 
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
@@ -75,10 +90,10 @@ class DelayState(State):
 
     def _signal_handler(self, signum, frame, wait_time, lick_time_list, start_time):
         # Check the elapsed time to determine if the monitoring period has finished.
-        # trial開始後からちょうど5秒後にCS+報酬を提供する。
-        if time.perf_counter() - start_time >= 5 and not self.reward_given:
-            self._give_reward()
-            self.reward_given = True  # 報酬が与えられたことを記録
+         #trial開始後からちょうど5秒後にCS+報酬を提供する。
+        #if time.perf_counter() - start_time >= 5 and not self.reward_given:
+        ##    self._give_reward()
+         #   self.reward_given = True  # 報酬が与えられたことを記録
 
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
@@ -87,6 +102,7 @@ class DelayState(State):
             self.results['state_result'] = TaskResult.Success
             self.results['lick_time_list'] = lick_time_list
             self._logger.info(f"{self.name}: Success")# with lick times: {lick_time_list}")
+            self.reward_given =False
         else:
             # Check if a lick has been detected.
             #self._task_gpio._detect_lick()
@@ -106,6 +122,7 @@ class DelayState(State):
             
 
     def _monitor_wait_task(self, phase_settings):
+
         if phase_settings.wait_time_in_s == 0:
         #phase_settings.delay_state_skip:
             #print("skip")
@@ -119,6 +136,7 @@ class DelayState(State):
         wait_list = phase_settings.wait_time_list
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
+        self.start_reward_timer()
 
         while time.perf_counter() - start_time <= wait_time:
 
