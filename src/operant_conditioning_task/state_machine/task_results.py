@@ -111,7 +111,8 @@ class TaskResults:
             unix_time=nose_poke_correct_unix_time_list_for_trial[i]
             self._results_file_writer.writerow([unix_time, trial_num, state_name, f'NP{nose_poke_hole_number_correct_list_for_trial[i]}', 1, ''])
 
-
+    def store_trial_start(self, trial_num, trial_start_unix_time):
+        self._results_file_writer.writerow([trial_start_unix_time, trial_num, "Trial_Start", 'trial_start', 1, ''])
 
 
     # Nose poke 行動の結果を記録します。

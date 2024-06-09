@@ -45,6 +45,8 @@ class OperantConditioningModel:
         # ログ出力を行うオブジェクトです。
         self._logger = logger
 
+        self.trial_start_unix_time=-1
+
         # ステート マシンの各状態を処理するオブジェクトを生成します。
         # 状態オブジェクトは、transitions ライブラリの State クラスの派生クラスから生成されます。
         states = [
@@ -89,7 +91,9 @@ class OperantConditioningModel:
 
         # 次の試行のための設定を行います。
         settings_phase_name = self._settings.set_for_next_trial(self._task_results)
+        self.trial_start_unix_time = time.time()
         self._logger.info(f'Trial#{self._settings.current_trial_num}: Started., Setting phase: {settings_phase_name}')
+        self._task_results.store_trial_start(self._settings.current_trial_num, self.trial_start_unix_time)
 
         # 次の状態に遷移します。
         self.trigger('StartTrial')
