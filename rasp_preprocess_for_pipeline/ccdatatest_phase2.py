@@ -1,9 +1,9 @@
 import h5py
 
 # 既存のHDF5ファイル名
-input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\TO36\day04-phase2S01_\\20240418-120720_11_3CSRTT_MAP-Sul-task-noSDS-vstim_SU222_day04-phase2S01___cc_data.h5"
+input_filename =
 # 新しいHDF5ファイル名
-output_filename = 'Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\TO36\day04-phase2S01_\\240609-225158_5-5_3CSRTT-phase1_Sul_TO036_day04-phase2S01___cc_data.h5'
+output_filename = 
 
 import h5py
 import numpy as np
@@ -14,8 +14,8 @@ import pandas as pd
 #input_filename = 'your_input_file.h5'
 
 # CSVファイルのパス
-#csv_path = "Z:\D2behavior\prj5-5\\3CSRTT-phase1\\results_files\\results-240608-183536.csv"
-csv_path = "Z:\D2behavior\prj5-5\\3CSRTT-phase1\\results_files\\results-240609-225158.csv"
+#csv_path =
+csv_path = 
 # HDF5ファイルのパス
 hdf5_path = input_filename
 # データセット名のリスト
