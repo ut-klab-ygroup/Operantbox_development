@@ -1,21 +1,23 @@
 import h5py
 
 # 既存のHDF5ファイル名
-input_filename =
+input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\TO36\day04-phase2S01_\\template\\20240418-120720_11_3CSRTT_MAP-Sul-task-noSDS-vstim_SU222_day04-phase2S01___cc_data.h5"
 # 新しいHDF5ファイル名
-output_filename = 
+output_filename = 'Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\TO36\day04-phase2S01_\\240609-225158_5-5_3CSRTT-phase1_Sul_TO036_day04-phase2S01___cc_data.h5'
 
 import h5py
 import numpy as np
 import pandas as pd
+                
+import shutil
 
 ###   現状ではconfigに相当する
 # HDF5ファイル名
 #input_filename = 'your_input_file.h5'
 
 # CSVファイルのパス
-#csv_path =
-csv_path = 
+#csv_path = "Z:\D2behavior\prj5-5\\3CSRTT-phase1\\results_files\\results-240608-183536.csv"
+csv_path = "Z:\D2behavior\prj5-5\\3CSRTT-phase1\\results_files\\results-240609-225158.csv"
 # HDF5ファイルのパス
 hdf5_path = input_filename
 # データセット名のリスト
@@ -70,10 +72,10 @@ df = pd.read_csv(csv_path, delimiter=',')
 # HDF5ファイルを開く
 with h5py.File(hdf5_path, 'r+') as file:
     # 各trial_numに対して処理
-    for trial_num_in_df in df['trial_num'].unique():
+    for trial_num in df['trial_num'].unique():
         # trial_startの時刻を取得
         #print(i)
-        trial_num=trial_num_in_df-1
+        #trial_num=trial_num_in_df-1
         if trial_num > max(trial_nums):
             break
         print(trial_num)
@@ -83,15 +85,17 @@ with h5py.File(hdf5_path, 'r+') as file:
         # actionごとのデータを処理
         for action in ['Lick', 'NP0', 'NP1', 'NP2', 'NP3', 'NP4']:
             # 対応するactionの行をフィルタリング
-            action_df = df[(df['trial_num'] == trial_num_in_df) & (df['action'] == action)]
+            action_df = df[(df['trial_num'] == trial_num) & (df['action'] == action)]
             # データセットのパス
             data_path = f"trial_data/{trial_num:03d}/{action}"
+            downsample_path = f"param_dev/dev1_ai_task/{action}/downsample_in_hz"
+            downsample_in_hz = file[downsample_path][()]
             if data_path in file:
                 # データセットの現在のデータを取得
                 data_array = file[data_path][()]
                 # 各時刻について処理
                 for _, row in action_df.iterrows():
-                    time_index = int((row['time'] - trial_start) * 2)  # 20 Hzに基づいてインデックスを計算
+                    time_index = int((row['time'] - trial_start) * downsample_in_hz)  # 20 Hzに基づいてインデックスを計算
                     print(time_index)
                     
                     print(len(data_array))
@@ -101,12 +105,91 @@ with h5py.File(hdf5_path, 'r+') as file:
                 # 更新されたデータでデータセットを上書き
                 file[data_path][...] = data_array
                 
-                
-import shutil
+
+
+
+"""
+# HDF5ファイルを開く
+with h5py.File(hdf5_path, 'r+') as file:
+    # 各trial_numに対して処理
+    for trial_num in df['trial_num'].unique():
+        # trial_startの時刻を取得
+        if trial_num > max(trial_nums):
+            continue
+        print(trial_num)
+        
+        trial_start = file[f"trial_data/{trial_num:03d}/trial_start"][()]
+
+        # actionごとのデータを処理
+        for action in ['OP_NP1_correct', 'OP_NP2_correct', 'OP_NP3_correct']:
+            # 対応するactionの行をフィルタリング
+            action_df = df[(df['trial_num'] == trial_num) & (df['action'] == action)]
+            # データセットのパス
+            data_path = f"trial_data/{trial_num:03d}/operant_events/{action}/responses"
+            # データセットが存在しなければ作成
+            if data_path not in file:
+                file.create_dataset(data_path, data=np.zeros(1000, dtype=int))  # 仮に1000と設定
+
+            # データセットの現在のデータを取得
+            data_array = file[data_path][()]
+
+            # 各時刻について処理
+            for _, row in action_df.iterrows():
+                time_index = int((row['time'] - trial_start) * 2)  # 20 Hzに基づいてインデックスを計算
+                if 0 <= time_index < len(data_array):
+                    data_array[time_index] = 1  # 値を1に更新
+                print(data_array)
+            # 更新されたデータでデータセットを上書き
+            file[data_path][...] = data_array
+"""
+operant_downsample_in_hz = 10#pipeline解析の都合で10固定
+# HDF5ファイルを開く
+with h5py.File(hdf5_path, 'r+') as file:
+    # 各trial_numに対して処理
+    for trial_num in df['trial_num'].unique():
+        # trial_startの時刻を取得
+        if trial_num > max(trial_nums):
+            continue
+        print(trial_num)
+        
+        trial_start = file[f"trial_data/{trial_num:03d}/trial_start"][()]
+
+        # actionごとのデータを処理
+        for action in ['OP_NP1_correct', 'OP_NP2_correct', 'OP_NP3_correct']:
+            # 対応するactionの行をフィルタリング
+            action_df = df[(df['trial_num'] == trial_num) & (df['action'] == action)]
+            # データセットのパス
+            response_path = f"trial_data/{trial_num:03d}/operant_events/{action}/responses"
+            success_path = f"trial_data/{trial_num:03d}/operant_events/{action}/success"
+
+            # データセットが存在しなければ作成
+            if response_path not in file:
+                file.create_dataset(response_path, data=np.zeros(1000, dtype=int))  # 仮に1000と設定
+            
+            data_array = file[response_path][()]
+            success_indices = []
+
+            # 各時刻について処理
+            for _, row in action_df.iterrows():
+                time_index = int((row['time'] - trial_start) * operant_downsample_in_hz)  # 20 Hzに基づいてインデックスを計算
+                if 0 <= time_index < len(data_array):
+                    data_array[time_index] = 1  # 値を1に更新
+                    success_indices.append(time_index * (1000 / operant_downsample_in_hz))  # 例としてdownsample_in_hz=2
+
+            # 更新されたデータでデータセットを上書き
+            file[response_path][...] = data_array
+
+            # successデータセットを作成または更新
+            if success_path in file:
+                del file[success_path]  # 既存データセットがあれば削除
+            file.create_dataset(success_path, data=np.array(success_indices, dtype=int))
+
+print("データの更新が完了しました")
+print("データの更新が完了しました")
+
 
 # 入力ファイルを変更した後に、そのファイルを出力ファイルパスにコピー
 shutil.copy(input_filename, output_filename)
 
 
 print("データの更新が完了しました")
-
