@@ -78,7 +78,7 @@ class Settings:
         self.experiment_name = experiment_name
 
         # 現在の試行番号です。
-        self.current_trial_num = 0
+        self.current_trial_num = -1
 
         # 現在の設定フェーズにおける試行番号です。
         self._trial_num_in_phase = 0

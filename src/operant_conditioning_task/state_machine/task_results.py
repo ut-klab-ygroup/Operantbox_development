@@ -90,7 +90,7 @@ class TaskResults:
         for i in range(len(lick_unix_time_list_for_trial)):
             unix_time=lick_unix_time_list_for_trial[i]
             self._results_file_writer.writerow([unix_time, trial_num, state_name, 'Lick', 1, ''])
-
+            
     def store_multiple_nose_pokes_results_for_trial(self, trial_num, nose_poke_unix_time_list_for_trial,nose_poke_hole_number_list_for_trial,nose_poke_correct_unix_time_list_for_trial, nose_poke_hole_number_correct_list_for_trial ,state_name):
         self._multiple_nose_pokes_results['trial_num'].append(trial_num)    # 実験開始からの経過時間 (msec; int)
         #self._multiple_nose_pokes_results['lick_times_list_for_trial'].append(lick_time_list_for_trial) 
@@ -109,7 +109,7 @@ class TaskResults:
             self._results_file_writer.writerow([unix_time, trial_num, state_name, f'NP{nose_poke_hole_number_list_for_trial[i]}', 1, ''])
         for i in range(len(nose_poke_correct_unix_time_list_for_trial)):
             unix_time=nose_poke_correct_unix_time_list_for_trial[i]
-            self._results_file_writer.writerow([unix_time, trial_num, state_name, f'NP{nose_poke_hole_number_correct_list_for_trial[i]}', 1, ''])
+            self._results_file_writer.writerow([unix_time, trial_num, state_name, f'OP_NP{nose_poke_hole_number_correct_list_for_trial[i]}_correct', 1, ''])
 
     def store_trial_start(self, trial_num, trial_start_unix_time):
         self._results_file_writer.writerow([trial_start_unix_time, trial_num, "Trial_Start", 'trial_start', 1, ''])
