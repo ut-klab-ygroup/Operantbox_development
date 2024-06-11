@@ -7,7 +7,7 @@
 
 import time
 
-from gpiozero import LED, LEDBoard, Button
+from gpiozero import LED, LEDBoard, Button, PWMLED
 import numpy as np
 
 
@@ -21,7 +21,7 @@ class TaskGpio:
         # デジタル入出力を行うオブジェクトを生成します。
         self._chamber_light = LED(pin_assignment['chamber_light'])
         self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05)
-        self._nose_poke_leds = LEDBoard(*pin_assignment['nose_poke_leds'])
+        self._nose_poke_leds = [PWMLED(p, initial_value=0, frequency=100) for p in pin_assignment['nose_poke_leds']]
         self._nose_poke_pin_assignment = np.array(pin_assignment['nose_poke_sensors'])
         self._nose_poke_sensors = []
         for i in range(len(pin_assignment['nose_poke_sensors'])):
@@ -117,7 +117,7 @@ class TaskGpio:
             
         if status == 'on':
             for target_index in target_index_list:
-                self._nose_poke_leds[target_index].on()
+                self._nose_poke_leds[target_index].value = 0.1  # 明るさは 0 - 1 で調整可
             self._logger.debug(self._state_name + ': Nose poke LED on.')
         elif status == 'off':
             for target_index in target_index_list:
