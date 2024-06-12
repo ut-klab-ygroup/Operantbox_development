@@ -2,9 +2,8 @@ import h5py
 import numpy as np
 
 # HDF5ファイル名
-#input_filename = "Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\SAtest1\day01-phase1S01_\\20240122-101416_11-1_3CSRTT_MAP-task-noSDS-vstim_SU183_day01-phase1S01___cc_data.h5"
-     #  　古いデータでおこなうと　itiがことなるためエラーが出る。
-input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\cond_rasp-exp\TO36\day04-phase2S01_\\template\\20240418-120720_11_3CSRTT_MAP-Sul-task-noSDS-vstim_SU222_day04-phase2S01___cc_data.h5"
+#input_filename =      #  　古いデータでおこなうと　itiがことなるためエラーが出る。
+input_filename =
 # 更新するtrial_numのリスト
 trial_nums = [i for i in range(60)]  # 例として
 
