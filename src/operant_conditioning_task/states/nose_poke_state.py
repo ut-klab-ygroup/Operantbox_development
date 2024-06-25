@@ -38,6 +38,7 @@ class NosePokeState(State):
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
 
+        #lickとNPでサンプリングレートを変えるのは、チャタリングにならない上限のサンプリングレートに差があったためだが、6/26時点ではみられず。将来的には不要か。
         self.lick_detect_hz=20
         self.NP_detect_hz=20
         
@@ -48,7 +49,16 @@ class NosePokeState(State):
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()
-        self.call_counts_list=[]
+        self.call_count=-1
+
+        #while time.perf_counter() - start_time <= phase_settings.stimulus_duration_in_s:
+        self.handler = functools.partial(self._combined_signal_handler, start_time=start_time, 
+                                    phase_settings=phase_settings, 
+                                    nose_poke_time_list=nose_poke_time_list, 
+                                    nose_poke_hole_number_list=nose_poke_hole_number_list,
+                                    nose_poke_correct_time_list=nose_poke_correct_time_list, 
+                                    nose_poke_hole_number_correct_list=nose_poke_hole_number_correct_list,
+                                    lick_time_list=lick_time_list)
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # マウスの nose poke 状態の処理を開始します。
@@ -83,8 +93,7 @@ class NosePokeState(State):
                                  nose_poke_time_list, nose_poke_hole_number_list, 
                                  nose_poke_correct_time_list, nose_poke_hole_number_correct_list,
                                  lick_time_list):
-        call_count=self.call_counts_list[-1]
-        self.call_counts_list.append(call_count+1)
+        self.call_count+=1
         current_time = time.perf_counter()
         if current_time - start_time > phase_settings.stimulus_duration_in_s:
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -155,18 +164,8 @@ class NosePokeState(State):
         nose_poke_time_list, nose_poke_hole_number_list = [], []
         nose_poke_correct_time_list, nose_poke_hole_number_correct_list = [], []
         lick_time_list = []
-        self.call_counts_list.append(0)
-
-        #while time.perf_counter() - start_time <= phase_settings.stimulus_duration_in_s:
-        handler = functools.partial(self._combined_signal_handler, start_time=start_time, 
-                                    phase_settings=phase_settings, 
-                                    nose_poke_time_list=nose_poke_time_list, 
-                                    nose_poke_hole_number_list=nose_poke_hole_number_list,
-                                    nose_poke_correct_time_list=nose_poke_correct_time_list, 
-                                    nose_poke_hole_number_correct_list=nose_poke_hole_number_correct_list,
-                                    lick_time_list=lick_time_list)
         
-        signal.signal(signal.SIGALRM, handler)
+        signal.signal(signal.SIGALRM, self.handler)
         signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
         while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
