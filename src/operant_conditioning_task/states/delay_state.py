@@ -63,18 +63,6 @@ class DelayState(State):
         self._logger.debug(self.name + ': Finished')
         
 
-    def start_reward_timer(self):
-        # スレッドを起動し、5秒後に報酬を与える
-        reward_thread = threading.Timer(5.0, self.give_reward)
-        reward_thread.start()
-            #->正確さに欠ける
-
-    def give_reward(self):
-        if not self.reward_given:
-            self._give_reward()
-            self.reward_given = True
-            print("報酬を提供しました。")
-
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
         pass
@@ -90,10 +78,9 @@ class DelayState(State):
          #   self.reward_given = True  # 報酬が与えられたことを記録
         call_count=self.call_counts_list[-1]
         self.call_counts_list.append(call_count+1)
-        print(call_counts)
         if call_count == self.lick_detect_hz*5:
-            self._give_reward
             reward_time = time.time()
+            self._give_reward()
             self._logger.info("Giving Reward at " + str(reward_time))
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
@@ -132,7 +119,6 @@ class DelayState(State):
         wait_list = phase_settings.wait_time_list
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
-        self.start_reward_timer()
 
         while time.perf_counter() - start_time <= wait_time:
 

@@ -4,7 +4,7 @@
 phase_list = ["phase1", "phase2", "phase3", "phase4", "phase5_1", "phase5_2", "phase5_3", "phase5_4", "phase5_5", "phase5_6", "phase6"]
 
 # 開始設定フェーズの名前です。
-current_phase = "phase2"
+current_phase = "phase1"
 
 # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
 num_trials_before = 10
@@ -27,7 +27,7 @@ trial_threshold_list = [100, 200, 300, 400, 500, 600]
 #   この順番で繰り返し各試行に適用されます。
 
 [phase1]
-#x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
+#x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [3,4], [3]]
 x = [[], [], [], [], [], []]
 is_nose_poke_skip = true
 is_lick_wait = false # lick_stateをskipさせないためにはここをtrueにする必要があるが現状の実装ではdelay stateを使うためfalseで良い
@@ -41,7 +41,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = 0 #ここは0でいいのか要確認。
 
 [phase2]
-x = [[2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4], [2, 3, 4]]
+x = [[1,2, 3], [1,2, 3], [1,2, 3], [1,2, 3], [1,2, 3], [1,2, 3]]
 is_nose_poke_skip = false
 is_lick_wait = false #lick_stateはskip
 delay_state_skip = true

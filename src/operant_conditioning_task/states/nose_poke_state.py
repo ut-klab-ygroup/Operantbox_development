@@ -41,8 +41,8 @@ class NosePokeState(State):
         self.lick_detect_hz=20
         self.NP_detect_hz=20
         
-        if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
-            raise ValueError("lick NP detection hz ratio is not an integer.")
+        #if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
+        #    raise ValueError("lick NP detection hz ratio is not an integer.")
 
 
         # 状態の結果データです。
