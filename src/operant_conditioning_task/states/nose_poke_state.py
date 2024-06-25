@@ -38,6 +38,13 @@ class NosePokeState(State):
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
 
+        self.lick_detect_hz=20
+        self.NP_detect_hz=20
+        
+        if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
+            raise ValueError("lick NP detection hz ratio is not an integer.")
+
+
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()
@@ -71,7 +78,7 @@ class NosePokeState(State):
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
         pass
-
+    #周期的に呼び出されるhandler, lick検出の指定振動数で呼び出される。
     def _combined_signal_handler(self, signum, frame, start_time, phase_settings, 
                                  nose_poke_time_list, nose_poke_hole_number_list, 
                                  nose_poke_correct_time_list, nose_poke_hole_number_correct_list,
@@ -89,14 +96,14 @@ class NosePokeState(State):
             self.results['lick_time_list'] = lick_time_list
             self._logger.info(f"{self.name}: Task monitoring finished.")
         else:
-            if call_count % 1 == 0:
+            if call_count % (self.lick_detect_hz/self.NP_detect_hz) == 0:
                 self._check_nose_poke(nose_poke_time_list, nose_poke_hole_number_list,
                                       nose_poke_correct_time_list, nose_poke_hole_number_correct_list)
             self._check_lick(lick_time_list)
 
     def _check_nose_poke(self, nose_poke_time_list, nose_poke_hole_number_list, 
                          nose_poke_correct_time_list, nose_poke_hole_number_correct_list):
-        if self._task_gpio.is_nose_poked: #これだとNPが終わらないと呼び出されない。またNP3が呼び出されない。
+        if self._task_gpio.is_nose_poked: #when_pressedに応じて、
                 self._nose_poke_callback_phase2(nose_poke_time_list,nose_poke_hole_number_list,nose_poke_correct_time_list,nose_poke_hole_number_correct_list)
                 self._task_gpio.reset_state(self.name)
         else:#NPセンサーに対する持続的な入力に対応するための実装
@@ -160,7 +167,7 @@ class NosePokeState(State):
                                     lick_time_list=lick_time_list)
         
         signal.signal(signal.SIGALRM, handler)
-        signal.setitimer(signal.ITIMER_REAL, 0.05, 0.05)
+        signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
         while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
             time.sleep(0.05)  # CPU使用率を低下させるためにスリープ

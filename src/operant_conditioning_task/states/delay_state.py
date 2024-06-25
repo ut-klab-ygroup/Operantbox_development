@@ -25,35 +25,28 @@ class DelayState(State):
 
     # 状態オブジェクトを生成します。
     def __init__(self, *args, **kwargs):
-
         # State クラスのコンストラクターを呼び出します。
         super(DelayState, self).__init__(kwargs['name'])
-
         # ===== インスタンス変数 =====
-
         # プログラム全体の設定です。
         self._settings = kwargs['settings']
-
         # GPIO のデジタル入出力を行うオブジェクトです。
         self._task_gpio = kwargs['task_gpio']
-
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
-
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()
-
+        self.lick_detect_hz=20
+        self.call_counts_list=[]
         self.reward_given =False
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # 待機状態の処理を開始します。
     def enter(self, event_data):
         self._logger.info(self.name + ': Started')
-
         # 状態の結果データを初期化します。
         self.results = dict()
-        
         #以下はdebugする時用
         if self._settings.debug['skip_state']:
             time.sleep(2)
@@ -74,6 +67,7 @@ class DelayState(State):
         # スレッドを起動し、5秒後に報酬を与える
         reward_thread = threading.Timer(5.0, self.give_reward)
         reward_thread.start()
+            #->正確さに欠ける
 
     def give_reward(self):
         if not self.reward_given:
@@ -94,7 +88,13 @@ class DelayState(State):
         #if time.perf_counter() - start_time >= 5 and not self.reward_given:
         ##    self._give_reward()
          #   self.reward_given = True  # 報酬が与えられたことを記録
-
+        call_count=self.call_counts_list[-1]
+        self.call_counts_list.append(call_count+1)
+        print(call_counts)
+        if call_count == self.lick_detect_hz*5:
+            self._give_reward
+            reward_time = time.time()
+            self._logger.info("Giving Reward at " + str(reward_time))
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -104,14 +104,10 @@ class DelayState(State):
             self._logger.info(f"{self.name}: Success")# with lick times: {lick_time_list}")
             self.reward_given =False
         else:
-            # Check if a lick has been detected.
-            #self._task_gpio._detect_lick()
             if self._task_gpio._lick_sensor.is_pressed:
                 self._task_gpio._lick_time = time.time()
                 self._task_gpio.get_lick_results(self.results)
                 self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
-                    ##lick_timeの検出は01で行っても良い。
-                #lick_time_list.append(current_time - start_time)
                 lick_time_list.append(self.results['lick_time'])
                 self._task_gpio.reset_state(self.name) 
                     #reset_stateをここで行わないとlick_timeが更新されない。
@@ -144,9 +140,9 @@ class DelayState(State):
             #handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
             handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
             signal.signal(signal.SIGALRM, handler)
-
+            self.call_counts_list.append(-1)
             # Configure the timer to fire every 0.1 seconds.
-            signal.setitimer(signal.ITIMER_REAL, 0.1, 0.1)
+            signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
             # Wait for the signal handler to end the monitoring.
             while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
@@ -154,23 +150,16 @@ class DelayState(State):
 
 # 報酬を付与します。
     def _give_reward(self):
-
         # 報酬用 LED を点灯します。
         self._task_gpio.switch_reward_led('ON')
-
         # 報酬用ブザーを鳴らします。
         self._task_gpio.trigger_reward_buzzer()
-
         speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-
         # シリンジ ポンプを駆動します。
         self._task_gpio.trigger_reward_pump()
-
         # 報酬用 LED の点灯時間を調整します。
         time.sleep(1)
-
         # 報酬用 LED を消灯します。
         self._task_gpio.switch_reward_led('OFF')
-
         #WAVファイルの停止
         speaker.stop_wav()
