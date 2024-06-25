@@ -40,6 +40,9 @@ class DelayState(State):
         self.lick_detect_hz=20
         self.call_counts_list=[]
         self.reward_given =False
+        self.reward_offering_time = 5
+        self.call_count=-1
+        self.handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # 待機状態の処理を開始します。
@@ -71,17 +74,14 @@ class DelayState(State):
     
 
     def _signal_handler(self, signum, frame, wait_time, lick_time_list, start_time):
-        # Check the elapsed time to determine if the monitoring period has finished.
-         #trial開始後からちょうど5秒後にCS+報酬を提供する。
-        #if time.perf_counter() - start_time >= 5 and not self.reward_given:
-        ##    self._give_reward()
-         #   self.reward_given = True  # 報酬が与えられたことを記録
-        call_count=self.call_counts_list[-1]
-        self.call_counts_list.append(call_count+1)
-        if call_count == self.lick_detect_hz*5:
+        self.call_count+=1
+        
+        # delay state開始から一定時間後にreward 提供 #現状の実装では5秒後
+        if call_count == self.lick_detect_hz* self.reward_offering_time:
             reward_time = time.time()
             self._give_reward()
             self._logger.info("Giving Reward at " + str(reward_time))
+            
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -90,7 +90,9 @@ class DelayState(State):
             self.results['lick_time_list'] = lick_time_list
             self._logger.info(f"{self.name}: Success")# with lick times: {lick_time_list}")
             self.reward_given =False
+            
         else:
+            
             if self._task_gpio._lick_sensor.is_pressed:
                 self._task_gpio._lick_time = time.time()
                 self._task_gpio.get_lick_results(self.results)
@@ -120,19 +122,14 @@ class DelayState(State):
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
 
-        while time.perf_counter() - start_time <= wait_time:
+        # Set the signal handler for SIGALRM.
+        signal.signal(signal.SIGALRM, self.handler)
+        # Configure the timer to fire every 0.1 seconds.
+        signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
-            # Set the signal handler for SIGALRM.
-            #handler = lambda signum, frame: self._signal_handler(signum, frame, self, wait_time, lick_time_list, start_time)
-            handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
-            signal.signal(signal.SIGALRM, handler)
-            self.call_counts_list.append(-1)
-            # Configure the timer to fire every 0.1 seconds.
-            signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
-
-            # Wait for the signal handler to end the monitoring.
-            while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
-                time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
+        # Wait for the signal handler to end the monitoring.
+        while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
+            time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
 
 # 報酬を付与します。
     def _give_reward(self):
