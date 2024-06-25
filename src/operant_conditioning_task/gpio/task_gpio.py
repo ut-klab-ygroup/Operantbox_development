@@ -117,7 +117,7 @@ class TaskGpio:
             
         if status == 'on':
             for target_index in target_index_list:
-                self._nose_poke_leds[target_index].value = 0.1  # 明るさは 0 - 1 で調整可
+                self._nose_poke_leds[target_index].value = 1  # 明るさは 0 - 1 で調整可
             self._logger.debug(self._state_name + ': Nose poke LED on.')
         elif status == 'off':
             for target_index in target_index_list:

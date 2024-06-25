@@ -4,7 +4,7 @@
 phase_list = ["phase1", "phase2", "phase3", "phase4", "phase5_1", "phase5_2", "phase5_3", "phase5_4", "phase5_5", "phase5_6", "phase6"]
 
 # 開始設定フェーズの名前です。
-current_phase = "phase1"
+current_phase = "phase2"
 
 # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
 num_trials_before = 10
@@ -38,7 +38,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = 0
 
 [phase2]
-x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
+x = [[2, 3, 4], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = false
 is_perservative = false
