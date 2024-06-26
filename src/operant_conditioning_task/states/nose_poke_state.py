@@ -13,7 +13,6 @@ from states.task_result_enum import TaskResult
 from music import speaker
 import signal
 import functools
-from gpio.reward_control import RewardOffer 
 
 
 class NosePokeState(State):
