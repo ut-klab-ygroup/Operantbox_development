@@ -33,16 +33,18 @@ class NosePokeState(State):
         self._settings = kwargs['settings']# プログラム全体の設定です。
         self._task_gpio = kwargs['task_gpio']# GPIO のデジタル入出力を行うオブジェクトです。
         self._logger = kwargs['logger']# ログ出力を行うオブジェクトです。
+        self._reward_offer=kwargs['reward_offer'] #rewardの提供を制御するオブジェクトです。
         
-        self.reward_offer=RewardOffer()
+        #self.reward_offer=RewardOffer()
 
         #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
         self.lick_detect_hz=20
-        self.NP_detect_hz=20
+        self.NP_detect_hz=4
         self.reward_offering_duration=1 #second
         self.reward_stop_call_count=-1
-
-        if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
+        sampling_ratio_ratio = self.lick_detect_hz / self.NP_detect_hz
+        # resultは整数値です
+        if not sampling_ratio_ratio.is_integer():
             raise ValueError("lick NP detection hz ratio is not an integer.")
 
         self.time_out_in_s_NP = 3 #second
@@ -137,7 +139,7 @@ class NosePokeState(State):
         else:
             # 最新のNP_correctから1秒経ったタイミングでrewardを停止する。
             if self.reward_stop_call_count == self.call_count:
-                self.reward_offer.stop_offering()
+                self._reward_offer.stop_offering()
 
             if self.call_count % (self.lick_detect_hz/self.NP_detect_hz) == 0:
                 reward_start_call_count=self._check_nose_poke(nose_poke_time_list, nose_poke_hole_number_list,
@@ -175,15 +177,15 @@ class NosePokeState(State):
                     #最後のNPから遡ってtimeout_in_sの間に存在したindexを受け取り、それを元に今回のhole番号で3秒以内にNPがあったかの条件分岐を行う。
                     relevant_indices = [
                         index for index, time in enumerate(nose_poke_correct_time_list)
-                        if self.results['nose_poke_time'] <= time <= self.results['nose_poke_time'] + self.time_out_in_s_NP
+                        if self.results['nose_poke_time']- self.time_out_in_s_NP <= time <= self.results['nose_poke_time'] 
                     ]
-                    if len(nose_poke_correct_time_list)==0 or any(nose_poke_hole_number_correct_list[index] == self.results['nose_poked_hole_num'] for index in relevant_indices):
+                    if len(nose_poke_correct_time_list)==0 or all(nose_poke_hole_number_correct_list[index] != self.results['nose_poked_hole_num'] for index in relevant_indices):
                     #if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
                         nose_poke_correct_time_list.append(self.results['nose_poke_time'])
                         nose_poke_hole_number_correct_list.append(self.results['nose_poked_hole_num'])
                         self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_hole_num}')
                         reward_start_call_count = call_count
-                        self.reward_offer.start_offering() # correct timeの登録より先に行うと、_give_rewardが重複して呼び出されるため(?, 要確認)注意
+                        self._reward_offer.start_offering() # correct timeの登録より先に行うと、_give_rewardが重複して呼び出されるため(?, 要確認)注意
         return reward_start_call_count
 
     def _check_lick(self, lick_time_list):
@@ -213,32 +215,7 @@ class NosePokeState(State):
             nose_poke_correct_time_list.append(self.results['nose_poke_time'])
             nose_poke_hole_number_correct_list.append(self.results['nose_poked_hole_num'])
             self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_hole_num}') 
-            self.reward_offer.start_offering()
+            self._reward_offer.start_offering()
             reward_start_call_count=call_count
         return reward_start_call_count #報酬供与があった場合は、その時のcall count, なかった場合は-1を返す。
 
-"""
-    def _start_offering_reward(self):
-        # 報酬用 LED を点灯します。
-        self._task_gpio.switch_reward_led('ON')
-        # 報酬用ブザーを鳴らします。
-        self._task_gpio.trigger_reward_buzzer()
-        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-        # シリンジ ポンプを駆動します。
-        self._task_gpio.trigger_reward_pump()
-    
-    def _stop_offering_reward(self):
-        # 報酬用 LED を消灯します。
-        self._task_gpio.switch_reward_led('OFF')
-        #WAVファイルの停止
-        speaker.stop_wav()
-
-    def _give_reward(self):
-        self._task_gpio.switch_reward_led('ON')
-        self._task_gpio.trigger_reward_buzzer()
-        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-        self._task_gpio.trigger_reward_pump()
-        time.sleep(1)
-        self._task_gpio.switch_reward_led('OFF')
-        speaker.stop_wav()
-"""

@@ -1,19 +1,15 @@
 
 import time
 from transitions import State
-from music import speaker    
+from music import speaker  
+#from gpio.task_gpio import TaskGpio  
 
-class RewardOffer():
-    def __init__(self, *args, **kwargs):
-        
-        # ===== インスタンス変数 =====
-        # プログラム全体の設定です。
-        self._settings = kwargs['settings']
-        # GPIO のデジタル入出力を行うオブジェクトです。
-        self._task_gpio = kwargs['task_gpio']
-        # ログ出力を行うオブジェクトです。
-        self._logger = kwargs['logger']
-        
+class RewardOffer:
+    def __init__(self, settings, task_gpio, logger):
+        # インスタンス変数の設定
+        self._settings = settings
+        self._task_gpio = task_gpio
+        self._logger = logger
 
     def start_offering(self):
         # 報酬用 LED を点灯します。

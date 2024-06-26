@@ -15,7 +15,6 @@ from state_machine.task_results import TaskResults #作業ディレクトリ的�
 import functools
 import threading
 from music import speaker
-from gpio.reward_control import RewardOffer 
 
 class DelayState(State):
     """
@@ -35,8 +34,8 @@ class DelayState(State):
         self._task_gpio = kwargs['task_gpio']
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
+        self._reward_offer=kwargs['reward_offer']
 
-        self.reward_offer=RewardOffer()
         
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
@@ -85,11 +84,11 @@ class DelayState(State):
             reward_time = time.time()
             #self._give_reward()
             self._logger.info("Giving Reward at " + str(reward_time))
-            self.reward_offer.start_offering()
+            self._reward_offer.start_offering()
 
         # reward_offering_durationが経ってから、rewardを停止させる。
         if  self.call_count == self.lick_detect_hz* (self.reward_offering_time + self.reward_offering_duration):
-            self.reward_offer.stop_offering()   
+            self._reward_offer.stop_offering()   
 
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.

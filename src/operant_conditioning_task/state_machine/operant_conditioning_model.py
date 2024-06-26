@@ -23,6 +23,8 @@ from states.timeout_state import TimeoutState
 from states.task_result_enum import TaskResult
 from utility import OperantConditioningError
 
+from music import speaker  
+
 
 class OperantConditioningModel:
     """
@@ -35,10 +37,10 @@ class OperantConditioningModel:
         # モデル オブジェクトの名前です。
         # 実験名をモデル名とします。
         self.name = name
-
+        
         # プログラム全体の設定です。
         self._settings = settings
-
+        
         # 行動課題実験の結果データを保持するオブジェクトです。
         self._task_results = task_results
 
@@ -47,15 +49,19 @@ class OperantConditioningModel:
 
         self.trial_start_unix_time=-1
 
+        # RewardOffer インスタンスの初期化
+        self.reward_offer = RewardOffer(settings=settings, task_gpio=task_gpio, logger=logger)
+
+
         # ステート マシンの各状態を処理するオブジェクトを生成します。
         # 状態オブジェクトは、transitions ライブラリの State クラスの派生クラスから生成されます。
         states = [
             InitialState(name='InitialState'),
-            LickState(name='LickState', settings=settings, task_gpio=task_gpio, logger=logger),
-            DelayState(name='DelayState', settings=settings, task_gpio=task_gpio, logger=logger),
-            NosePokeState(name='NosePokeState', settings=settings, task_gpio=task_gpio, logger=logger),
-            RewardState(name='RewardState', settings=settings, task_gpio=task_gpio, logger=logger),
-            TimeoutState(name='TimeoutState', settings=settings, task_gpio=task_gpio, logger=logger)
+            LickState(name='LickState', settings=settings, task_gpio=task_gpio, logger=logger,reward_offer=self.reward_offer),
+            DelayState(name='DelayState', settings=settings, task_gpio=task_gpio, logger=logger, reward_offer=self.reward_offer),
+            NosePokeState(name='NosePokeState', settings=settings, task_gpio=task_gpio, logger=logger,reward_offer=self.reward_offer),
+            RewardState(name='RewardState', settings=settings, task_gpio=task_gpio, logger=logger,reward_offer=self.reward_offer),
+            TimeoutState(name='TimeoutState', settings=settings, task_gpio=task_gpio, logger=logger,reward_offer=self.reward_offer)
         ]
 
         # 状態遷移を定義します。
@@ -234,6 +240,51 @@ class OperantConditioningModel:
             pass
         self._logger.info('Unit state test: After callback finished.')
 
+class RewardOffer:
+    def __init__(self, settings, task_gpio, logger):
+        # インスタンス変数の設定
+        self._settings = settings
+        self._task_gpio = task_gpio
+        self._logger = logger
+
+    def start_offering(self):
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+        # 報酬用ブザーを鳴らします。
+        self._task_gpio.trigger_reward_buzzer()
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+    def stop_offering(self):
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+        #WAVファイルの停止
+        speaker.stop_wav()
+    
+    def give_reward(self):
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+
+        # 報酬用ブザーを鳴らします。
+        #self._task_gpio.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+        # すべての動作が1秒間続くように待機します。
+        time.sleep(1)
+
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+
+        # ブザーの停止（もし必要であればコードを追加）
+        #self._task_gpio.stop_reward_buzzer()
+
+        # WAVファイルの停止（もし音声ファイルの再生があれば）
+        speaker.stop_wav()
 
 # ===== テスト =====
 
