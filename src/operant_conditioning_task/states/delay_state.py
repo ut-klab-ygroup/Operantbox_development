@@ -15,6 +15,7 @@ from state_machine.task_results import TaskResults #作業ディレクトリ的�
 import functools
 import threading
 from music import speaker
+from gpio.reward_control import RewardOffer 
 
 class DelayState(State):
     """
@@ -34,16 +35,19 @@ class DelayState(State):
         self._task_gpio = kwargs['task_gpio']
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
+
+        self.reward_offer=RewardOffer()
+        
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()
         self.lick_detect_hz=20
         self.call_counts_list=[]
         self.reward_given =False
-        self.reward_offering_time = 5
+        self.reward_offering_time = 5 #second
+        self.reward_offering_duration=1 #second
         self.call_count=-1
-        self.handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
-
+        
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # 待機状態の処理を開始します。
     def enter(self, event_data):
@@ -77,11 +81,16 @@ class DelayState(State):
         self.call_count+=1
         
         # delay state開始から一定時間後にreward 提供 #現状の実装では5秒後
-        if call_count == self.lick_detect_hz* self.reward_offering_time:
+        if self.call_count == self.lick_detect_hz* self.reward_offering_time:
             reward_time = time.time()
-            self._give_reward()
+            #self._give_reward()
             self._logger.info("Giving Reward at " + str(reward_time))
-            
+            self.reward_offer.start_offering()
+
+        # reward_offering_durationが経ってから、rewardを停止させる。
+        if  self.call_count == self.lick_detect_hz* (self.reward_offering_time + self.reward_offering_duration):
+            self.reward_offer.stop_offering()   
+
         if time.perf_counter() - start_time > wait_time:#phase_settings.wait_time_in_s:
             # Stop the alarm timer.
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -121,9 +130,10 @@ class DelayState(State):
         wait_list = phase_settings.wait_time_list
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
+        handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
 
         # Set the signal handler for SIGALRM.
-        signal.signal(signal.SIGALRM, self.handler)
+        signal.signal(signal.SIGALRM, handler)
         # Configure the timer to fire every 0.1 seconds.
         signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
@@ -131,6 +141,7 @@ class DelayState(State):
         while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
             time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
 
+    """
 # 報酬を付与します。
     def _give_reward(self):
         # 報酬用 LED を点灯します。
@@ -146,3 +157,19 @@ class DelayState(State):
         self._task_gpio.switch_reward_led('OFF')
         #WAVファイルの停止
         speaker.stop_wav()
+
+    def _start_offering_reward(self):
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+        # 報酬用ブザーを鳴らします。
+        self._task_gpio.trigger_reward_buzzer()
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+    def _stop_offering_reward(self):
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+        #WAVファイルの停止
+        speaker.stop_wav()
+    """
