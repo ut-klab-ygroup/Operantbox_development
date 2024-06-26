@@ -38,7 +38,7 @@ class NosePokeState(State):
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
 
-        #lickとNPでサンプリングレートを変えるのは、チャタリングにならない上限のサンプリングレートに差があったためだが、6/26時点ではみられず。将来的には不要か。
+        #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
         self.lick_detect_hz=20
         self.NP_detect_hz=20
         
@@ -120,7 +120,6 @@ class NosePokeState(State):
                 if sensor.is_pressed:
                     self._task_gpio._nose_poke_time = time.time()
                     self.results['nose_poke_time'] = self._task_gpio._nose_poke_time
-                    self.results['selected_index'] = self._task_gpio._nose_poke_selected_index
                     pin_name = str(sensor.pin)
                     pin_num = int(pin_name.replace('GPIO', ''))
                     selected_index = np.where(pin_num == self._task_gpio._nose_poke_pin_assignment)
@@ -137,8 +136,7 @@ class NosePokeState(State):
                         nose_poke_correct_time_list.append(self.results['nose_poke_time'])
                         nose_poke_hole_number_correct_list.append(self.results['nose_poked_hole_num'])
                         self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_hole_num}')
-                        self._give_reward() # correct timeの登録より先に行うと、NPの間中loopをしてしまうため注意
-                        time.sleep(0.001)
+                        self._give_reward() # correct timeの登録より先に行うと、_give_rewardが重複して呼び出されるため(?, 要確認)注意
 
     def _check_lick(self, lick_time_list):
         if self._task_gpio._lick_sensor.is_pressed:
