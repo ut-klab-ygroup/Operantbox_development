@@ -42,8 +42,8 @@ class NosePokeState(State):
         self.lick_detect_hz=20
         self.NP_detect_hz=20
         
-        #if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
-        #    raise ValueError("lick NP detection hz ratio is not an integer.")
+        if not isinstance(self.lick_detect_hz / self.NP_detect_hz, int):
+            raise ValueError("lick NP detection hz ratio is not an integer.")
 
 
         # 状態の結果データです。
@@ -127,16 +127,16 @@ class NosePokeState(State):
                     if selected_index[0].size > 0:
                         #print(selected_index)
                         nosepoke_selected_index = selected_index[0][0]
-                        target_num = self._settings.NOSE_POKE_TARGETS[nosepoke_selected_index]
-                    self.results['target_num'] = target_num
-                    #print(target_num)
+                        nose_poked_num = self._settings.NOSE_POKE_TARGETS[nosepoke_selected_index]
+                    self.results['nose_poked_num'] = nose_poked_num
+                    #print(nose_poked_num)
                     nose_poke_time_list.append(self.results['nose_poke_time'])
-                    nose_poke_hole_number_list.append(self.results['target_num'])
-                    self._logger.info(self.name + f'NP detected, NP{target_num}')
+                    nose_poke_hole_number_list.append(self.results['nose_poked_num'])
+                    self._logger.info(self.name + f'NP detected, NP{nose_poked_num}')
                     if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
                         nose_poke_correct_time_list.append(self.results['nose_poke_time'])
-                        nose_poke_hole_number_correct_list.append(self.results['target_num'])
-                        self._logger.info(self.name + f'NP correct onset, NP correct onset {target_num}')
+                        nose_poke_hole_number_correct_list.append(self.results['nose_poked_num'])
+                        self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_num}')
                         self._give_reward() # correct timeの登録より先に行うと、NPの間中loopをしてしまうため注意
                         time.sleep(0.001)
 
@@ -185,15 +185,15 @@ class NosePokeState(State):
     def _nose_poke_callback_phase2(self, nose_poke_time_list, nose_poke_hole_number_list, 
                                    nose_poke_correct_time_list, nose_poke_hole_number_correct_list):
         self._task_gpio.get_nose_poke_results(self.results)
-        target_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
-        self.results['target_num'] = target_num
+        nose_poked_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
+        self.results['nose_poked_num'] = nose_poked_num
         nose_poke_time_list.append(self.results['nose_poke_time'])
-        nose_poke_hole_number_list.append(self.results['target_num'])
-        self._logger.info(self.name + f'NP detected, NP{target_num}')
+        nose_poke_hole_number_list.append(self.results['nose_poked_num'])
+        self._logger.info(self.name + f'NP detected, NP{nose_poked_num}')
         if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
             nose_poke_correct_time_list.append(self.results['nose_poke_time'])
-            nose_poke_hole_number_correct_list.append(self.results['target_num'])
-            self._logger.info(self.name + f'NP correct onset, NP correct onset {target_num}')
+            nose_poke_hole_number_correct_list.append(self.results['nose_poked_num'])
+            self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_num}')
             self._give_reward()
 
 
@@ -252,16 +252,16 @@ class NosePokeState(State):
                     if selected_index[0].size > 0:
                         #print(selected_index)
                         nosepoke_selected_index = selected_index[0][0]
-                        target_num = self._settings.NOSE_POKE_TARGETS[nosepoke_selected_index]
-                    self.results['target_num'] = target_num
-                    #print(target_num)
+                        nose_poked_num = self._settings.NOSE_POKE_TARGETS[nosepoke_selected_index]
+                    self.results['nose_poked_num'] = nose_poked_num
+                    #print(nose_poked_num)
                     nose_poke_time_list.append(self.results['nose_poke_time'])
-                    nose_poke_hole_number_list.append(self.results['target_num'])
-                    self._logger.info(self.name + f'NP detected, NP{target_num}')
+                    nose_poke_hole_number_list.append(self.results['nose_poked_num'])
+                    self._logger.info(self.name + f'NP detected, NP{nose_poked_num}')
                     if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
                         nose_poke_correct_time_list.append(self.results['nose_poke_time'])
-                        nose_poke_hole_number_correct_list.append(self.results['target_num'])
-                        self._logger.info(self.name + f'NP correct onset, NP correct onset {target_num}')
+                        nose_poke_hole_number_correct_list.append(self.results['nose_poked_num'])
+                        self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_num}')
                         self._give_reward() # correct timeの登録より先に行うと、NPの間中loopをしてしまうため注意
                         time.sleep(0.001)
 
@@ -298,15 +298,15 @@ class NosePokeState(State):
     def _nose_poke_callback_phase2(self, nose_poke_time_list, nose_poke_hole_number_list, 
                                    nose_poke_correct_time_list, nose_poke_hole_number_correct_list):
         self._task_gpio.get_nose_poke_results(self.results)
-        target_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
-        self.results['target_num'] = target_num
+        nose_poked_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
+        self.results['nose_poked_num'] = nose_poked_num
         nose_poke_time_list.append(self.results['nose_poke_time'])
-        nose_poke_hole_number_list.append(self.results['target_num'])
-        self._logger.info(self.name + f'NP detected, NP{target_num}')
+        nose_poke_hole_number_list.append(self.results['nose_poked_num'])
+        self._logger.info(self.name + f'NP detected, NP{nose_poked_num}')
         if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
             nose_poke_correct_time_list.append(self.results['nose_poke_time'])
-            nose_poke_hole_number_correct_list.append(self.results['target_num'])
-            self._logger.info(self.name + f'NP correct onset, NP correct onset {target_num}')
+            nose_poke_hole_number_correct_list.append(self.results['nose_poked_num'])
+            self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_num}')
             self._give_reward()
 
     def _give_reward(self):
