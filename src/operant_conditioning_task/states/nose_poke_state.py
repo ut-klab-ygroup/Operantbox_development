@@ -36,7 +36,9 @@ class NosePokeState(State):
         
         #self.reward_offer=RewardOffer()
 
-        #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
+        #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。
+        # 6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
+        ##6/27では5hz以上の検出で誤検出あり, 時たま検出遅れる？
         self.lick_detect_hz=20
         self.NP_detect_hz=4
         self.reward_offering_duration=1 #second
@@ -47,6 +49,7 @@ class NosePokeState(State):
             raise ValueError("lick NP detection hz ratio is not an integer.")
 
         self.time_out_in_s_NP = 3 #second
+        self.call_count_last_NP_correct_list =[-1000,-1000,-1000,-1000]
 
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
@@ -141,18 +144,18 @@ class NosePokeState(State):
                 self._reward_offer.stop_offering()
 
             if self.call_count % (self.lick_detect_hz/self.NP_detect_hz) == 0:
-                reward_start_call_count=self._check_nose_poke(nose_poke_time_list, nose_poke_hole_number_list,
-                                      nose_poke_correct_time_list, nose_poke_hole_number_correct_list, self.call_count)
+                reward_start_call_count,self.call_count_last_NP_correct_list=self._check_nose_poke(nose_poke_time_list, nose_poke_hole_number_list,
+                                      nose_poke_correct_time_list, nose_poke_hole_number_correct_list, self.call_count,self.call_count_last_NP_correct_list)
                 if reward_start_call_count != -1: # -1だった場合は、NP_correctがなかったということなので、stop_call_countは更新しない。
                     self.reward_stop_call_count = reward_start_call_count + self.reward_offering_duration * self.lick_detect_hz
                     # 1000秒以内に異なるNP holeがNPされた場合、報酬提供の終了時間は更新される。
             self._check_lick(lick_time_list)
 
     def _check_nose_poke(self, nose_poke_time_list, nose_poke_hole_number_list, 
-                         nose_poke_correct_time_list, nose_poke_hole_number_correct_list, call_count):
+                         nose_poke_correct_time_list, nose_poke_hole_number_correct_list, call_count, call_count_last_NP_correct_list):
         reward_start_call_count = -1
         if self._task_gpio.is_nose_poked: #when_pressedに応じて、
-            reward_start_call_count=self._nose_poke_callback_phase2(nose_poke_time_list,nose_poke_hole_number_list,nose_poke_correct_time_list,nose_poke_hole_number_correct_list,call_count)
+            reward_start_call_count,self.call_count_last_NP_correct_list=self._nose_poke_callback_phase2(nose_poke_time_list,nose_poke_hole_number_list,nose_poke_correct_time_list,nose_poke_hole_number_correct_list,call_count,call_count_last_NP_correct_list)
             self._task_gpio.reset_state(self.name)
             
         else:#NPセンサーに対する持続的な入力に対応するための実装
@@ -164,29 +167,28 @@ class NosePokeState(State):
                     pin_num = int(pin_name.replace('GPIO', ''))
                     selected_index = np.where(pin_num == self._task_gpio._nose_poke_pin_assignment)
                     if selected_index[0].size > 0:
-                        #print(selected_index)
                         nosepoke_selected_index = selected_index[0][0]
                         nose_poked_hole_num = self._settings.NOSE_POKE_TARGETS[nosepoke_selected_index]
                     self.results['nose_poked_hole_num'] = nose_poked_hole_num
-                    #print(nose_poked_hole_num)
                     nose_poke_time_list.append(self.results['nose_poke_time'])
                     nose_poke_hole_number_list.append(self.results['nose_poked_hole_num'])
                     self._logger.info(self.name + f'NP detected, NP{nose_poked_hole_num}')
-
+                    """
                     #最後のNPから遡ってtimeout_in_sの間に存在したindexを受け取り、それを元に今回のhole番号で3秒以内にNPがあったかの条件分岐を行う。
                     relevant_indices = [
                         index for index, time in enumerate(nose_poke_correct_time_list)
                         if self.results['nose_poke_time']- self.time_out_in_s_NP <= time <= self.results['nose_poke_time'] 
                     ]
-                    if len(nose_poke_correct_time_list)==0 or all(nose_poke_hole_number_correct_list[index] != self.results['nose_poked_hole_num'] for index in relevant_indices):
-                    #if not nose_poke_correct_time_list or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
+                    """
+                    if call_count_last_NP_correct_list[nosepoke_selected_index] + self.time_out_in_s_NP*self.lick_detect_hz < call_count:
                         nose_poke_correct_time_list.append(self.results['nose_poke_time'])
                         nose_poke_hole_number_correct_list.append(self.results['nose_poked_hole_num'])
                         self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_hole_num}')
                         reward_start_call_count = call_count
+                        call_count_last_NP_correct_list[nosepoke_selected_index] = call_count
                         self._reward_offer.start_offering() # correct timeの登録より先に行うと、_give_rewardが重複して呼び出されるため(?, 要確認)注意
-        return reward_start_call_count
-
+        return reward_start_call_count, call_count_last_NP_correct_list
+    
     def _check_lick(self, lick_time_list):
         if self._task_gpio._lick_sensor.is_pressed:
             self._task_gpio._lick_time = time.time()
@@ -196,7 +198,7 @@ class NosePokeState(State):
             self._task_gpio.reset_state(self.name)
 
     def _nose_poke_callback_phase2(self, nose_poke_time_list, nose_poke_hole_number_list, 
-                                   nose_poke_correct_time_list, nose_poke_hole_number_correct_list,call_count):
+                                   nose_poke_correct_time_list, nose_poke_hole_number_correct_list,call_count,call_count_last_NP_correct_list):
         self._task_gpio.get_nose_poke_results(self.results)
         nose_poked_hole_num = self._settings.NOSE_POKE_TARGETS[self.results['selected_index']]
         self.results['nose_poked_hole_num'] = nose_poked_hole_num
@@ -204,17 +206,16 @@ class NosePokeState(State):
         nose_poke_hole_number_list.append(self.results['nose_poked_hole_num'])
         self._logger.info(self.name + f'NP detected, NP{nose_poked_hole_num}')
         reward_start_call_count = -1
-
-        relevant_indices = [
-            index for index, time in enumerate(nose_poke_correct_time_list)
-            if self.results['nose_poke_time'] <= time <= self.results['nose_poke_time'] + self.time_out_in_s_NP
-        ]
-        if len(nose_poke_correct_time_list)==0 or any(nose_poke_hole_number_correct_list[index] == self.results['nose_poked_hole_num'] for index in relevant_indices):
+        nosepoke_selected_index=self.results['selected_index']
+        #if len(nose_poke_correct_time_list)==0 or any(nose_poke_hole_number_correct_list[index] == self.results['nose_poked_hole_num'] for index in relevant_indices):
+        if call_count_last_NP_correct_list[nosepoke_selected_index] + self.time_out_in_s_NP*self.lick_detect_hz < call_count:
         #if len(nose_poke_correct_time_list) == 0 or (self.results['nose_poke_time'] - nose_poke_correct_time_list[-1]) >= 3:
             nose_poke_correct_time_list.append(self.results['nose_poke_time'])
             nose_poke_hole_number_correct_list.append(self.results['nose_poked_hole_num'])
             self._logger.info(self.name + f'NP correct onset, NP correct onset {nose_poked_hole_num}') 
             self._reward_offer.start_offering()
             reward_start_call_count=call_count
-        return reward_start_call_count #報酬供与があった場合は、その時のcall count, なかった場合は-1を返す。
+            call_count_last_NP_correct_list[nosepoke_selected_index]=call_count
+
+        return reward_start_call_count, call_count_last_NP_correct_list #報酬供与があった場合は、その時のcall count, なかった場合は-1を返す。
 
