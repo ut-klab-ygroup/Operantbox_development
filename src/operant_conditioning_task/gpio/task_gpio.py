@@ -34,6 +34,7 @@ class TaskGpio:
         # ログ出力を行うオブジェクトです。
         self._logger = logger
 
+
         # 現在の状態の名前です。
         self._state_name = ''
         
@@ -160,6 +161,26 @@ class TaskGpio:
     # 報酬用ポンプを駆動します。
     def trigger_reward_pump(self):
         self._trigger_single_device(self._reward_pump)
+
+    def check_nose_poke_is_pressed(self,results):
+        # 各センサーをチェックし、アクティブなセンサーのインデックスを取得
+        for sensor in self._nose_poke_sensors:
+            if sensor.is_pressed:
+                results['nose_poke_time'] = time.time()
+                pin_name = str(sensor.pin)
+                pin_num = int(pin_name.replace('GPIO', ''))
+                selected_index = np.where(pin_num == self._nose_poke_pin_assignment)
+                if selected_index[0].size > 0:
+                    return selected_index[0][0]
+        return None
+    
+    def check_lick(self, results):
+        if self._lick_sensor.is_pressed:
+            self._lick_time = time.time()
+            self.get_lick_results(results)
+            #self.reset_state(self.name)
+            return True
+        return False
 
     
 
