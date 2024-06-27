@@ -34,28 +34,27 @@ class NosePokeState(State):
         self._logger = kwargs['logger']# ログ出力を行うオブジェクトです。
         self._reward_offer=kwargs['reward_offer'] #rewardの提供を制御するオブジェクトです。
         
-        #self.reward_offer=RewardOffer()
+        #memo
+            #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。
+            #6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
+            #6/27では5hz以上の検出で誤検出あり, 時たま検出遅れる？
 
-        #24/05の観察にて、検出可能な上限のサンプリングレートに差があったため、(lick 10hz, NP 2hz)それぞれ定義。
-        # 6/26時点ではみられず。この結果がconfirmationされれば将来的には不要か。
-        ##6/27では5hz以上の検出で誤検出あり, 時たま検出遅れる？
-        self.lick_detect_hz=20
-        self.NP_detect_hz=4
-        self.reward_offering_duration=1 #second
-        self.reward_stop_call_count=-1
+        # 検出周波数の設定（lickとNPのためのサンプルレート）
+        self.lick_detect_hz = 20  # Lick検出のためのサンプリングレート（Hz）
+        self.NP_detect_hz = 4  # Nose poke検出のためのサンプリングレート（Hz）
+        self.reward_offering_duration = 1  # 報酬提供の持続時間（秒）
+        self.reward_stop_call_count = -1  # 報酬停止のためのカウンター
+
+        # サンプリングレート比の計算
         sampling_ratio_ratio = self.lick_detect_hz / self.NP_detect_hz
-        # resultは整数値です
         if not sampling_ratio_ratio.is_integer():
-            raise ValueError("lick NP detection hz ratio is not an integer.")
+            raise ValueError("Lick and NP detection frequency ratio is not an integer.")
 
-        self.time_out_in_s_NP = 3 #second
-        self.call_count_last_NP_correct_list =[-1000,-1000,-1000,-1000]
+        self.time_out_in_s_NP = 3  # Nose pokeのタイムアウト時間（秒）
+        self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所
 
-        # 状態の結果データです。
-        # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
-        self.results = dict()
-        self.call_count=-1
-
+        self.results = dict()  # 状態の結果を格納する辞書
+        self.call_count = -1  # 呼び出しカウンタ
         
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
@@ -166,7 +165,8 @@ class NosePokeState(State):
             self._task_gpio.reset_state(self.name)
             
         else:#NPセンサーに対する持続的な入力に対応するための実装
-            #持続nose pokeへの対応：is_nose_pokeはfalseだが、信号入力がある場合
+            #持続nose pokeへの対応：センサーがis_pressedになっていないかを確認する。
+            # is_nose_pokeはfalseだが、信号入力がある場合を拾える。
             nosepoke_selected_index=self._task_gpio.check_nose_poke_is_pressed(self.results)
             if nosepoke_selected_index is not None:
                 # 選択されたNPhole名(番号)を取得
