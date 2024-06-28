@@ -41,7 +41,7 @@ class NosePokeState(State):
 
         # 検出周波数の設定（lickとNPのためのサンプルレート）
         self.lick_detect_hz = 20  # Lick検出のためのサンプリングレート（Hz）
-        self.NP_detect_hz = 20  # Nose poke検出のためのサンプリングレート（Hz）, 行動の時定数(想定)よりも細かい周期とする
+        self.NP_detect_hz = 20  # Nose poke検出のためのサンプリングレート（Hz）
         self.reward_offering_duration = 1  # 報酬提供の持続時間（秒）
         self.reward_stop_call_count = -1  # 報酬停止のためのカウンター
 
@@ -142,7 +142,6 @@ class NosePokeState(State):
             if self.reward_stop_call_count == self.call_count:
                 self._reward_offer.stop_offering()
 
-            #この条件分岐は、気温・湿度に対する検出の安定性が示されれば不要になる。
             if self.call_count % (self.lick_detect_hz/self.NP_detect_hz) == 0:
                 reward_start_flag,self.call_count_last_NP_correct_list=self._check_nose_poke(nose_poke_time_list, nose_poke_hole_number_list,
                                       nose_poke_correct_time_list, nose_poke_hole_number_correct_list, self.call_count,self.call_count_last_NP_correct_list)
@@ -164,7 +163,33 @@ class NosePokeState(State):
     def _check_nose_poke(self, nose_poke_time_list, nose_poke_hole_number_list, 
                          nose_poke_correct_time_list, nose_poke_hole_number_correct_list, call_count, call_count_last_NP_correct_list):
         # 初期値設定: 報酬開始のカウンターを-1にする（報酬を与えていないことを意味する）
-        reward_start_flag = -1 
+        reward_start_flag = -1
+        """
+        # handlerの呼び出しタイミングの間にnosepokeの開始(when_pressed信号)があったかををチェック
+        if self._task_gpio.is_nose_poked: 
+            print(time.time())
+            self._task_gpio.get_nose_poke_results(self.results)
+            nosepoke_selected_index=self.results['selected_index']
+            reward_start_flag,self.call_count_last_NP_correct_list=self.process_and_record_NP(nosepoke_selected_index,nose_poke_time_list,nose_poke_hole_number_list,nose_poke_correct_time_list,nose_poke_hole_number_correct_list,call_count,call_count_last_NP_correct_list,reward_start_flag)
+            self._task_gpio.reset_state(self.name)
+            print(time.time())
+            
+        else:
+            pass
+        
+
+        
+        memo 
+        if側   
+            処理に0.24秒
+        else以下は報酬提供が間に合っていない。
+            0.005秒
+        reset_stateを使うと検出がバグる。
+        """ 
+            #NPセンサーに対する持続的な入力に対応するための実装
+            #持続nose pokeへの対応：センサーがis_pressedになっていないかを確認する。
+            # is_nose_pokeはfalseだが、信号入力がある場合を拾える。
+        print(time.time())   
         nosepoke_selected_index=self._task_gpio.check_nose_poke_is_pressed(self.results)
         if nosepoke_selected_index is not None:
             # 選択されたNPhole名(番号)を取得
