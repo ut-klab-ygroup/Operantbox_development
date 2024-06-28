@@ -78,7 +78,6 @@ class DelayState(State):
 
     def _signal_handler(self, signum, frame, wait_time, lick_time_list, start_time):
         self.call_count+=1
-        
         # delay state開始から一定時間後にreward 提供 #現状の実装では5秒後
         if self.call_count == self.lick_detect_hz* self.reward_offering_time:
             reward_time = time.time()
@@ -101,20 +100,16 @@ class DelayState(State):
             
         else:
             
-            if self._task_gpio._lick_sensor.is_pressed:
-                self._task_gpio._lick_time = time.time()
-                self._task_gpio.get_lick_results(self.results)
+            lick_is_pressed = self._task_gpio.check_lick(self.results)
+            if lick_is_pressed:
                 self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
                 lick_time_list.append(self.results['lick_time'])
-                self._task_gpio.reset_state(self.name) 
-                    #reset_stateをここで行わないとlick_timeが更新されない。
-                    #todo：調査@240602
-                        ##→そもそもtask.gpioのresultsを使わなければチャタリングの問題も生じなさそうで20hzでの検出も可能か？それかsignalハンドラーによる呼び出しそのものでチャタリング的なこと起こる？？
-                #self._logger.info(f"{self.name}: Lick detected at {current_time - start_time} seconds")
-                    #time.sleep(1)
             
 
     def _monitor_wait_task(self, phase_settings):
+
+        #trialを更新するごとにcall_countは再定義する    
+        self.call_count=-1
 
         if phase_settings.wait_time_in_s == 0:
         #phase_settings.delay_state_skip:
@@ -139,36 +134,3 @@ class DelayState(State):
         # Wait for the signal handler to end the monitoring.
         while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
             time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
-
-    """
-# 報酬を付与します。
-    def _give_reward(self):
-        # 報酬用 LED を点灯します。
-        self._task_gpio.switch_reward_led('ON')
-        # 報酬用ブザーを鳴らします。
-        self._task_gpio.trigger_reward_buzzer()
-        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-        # シリンジ ポンプを駆動します。
-        self._task_gpio.trigger_reward_pump()
-        # 報酬用 LED の点灯時間を調整します。
-        time.sleep(1)
-        # 報酬用 LED を消灯します。
-        self._task_gpio.switch_reward_led('OFF')
-        #WAVファイルの停止
-        speaker.stop_wav()
-
-    def _start_offering_reward(self):
-        # 報酬用 LED を点灯します。
-        self._task_gpio.switch_reward_led('ON')
-        # 報酬用ブザーを鳴らします。
-        self._task_gpio.trigger_reward_buzzer()
-        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
-        # シリンジ ポンプを駆動します。
-        self._task_gpio.trigger_reward_pump()
-
-    def _stop_offering_reward(self):
-        # 報酬用 LED を消灯します。
-        self._task_gpio.switch_reward_led('OFF')
-        #WAVファイルの停止
-        speaker.stop_wav()
-    """
