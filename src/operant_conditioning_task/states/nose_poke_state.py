@@ -176,7 +176,7 @@ class NosePokeState(State):
                     self.reward_stop_call_count = reward_start_flag + self.reward_offering_duration * self.lick_detect_hz
                     # 1000秒以内に異なるNP holeがNPされた場合、報酬提供の終了時間は更新される。
                                      
-            #この処理は最後に行うこと。同じcallでstop call countが更新される可能性あり。
+            #この処理は最後に行うこと。同じcallでNP_correctが見つかった場合、この位置(NP_correctの確認と、stop_call_countの更新の後、)にあることで、この処理をskipできる。前にあった場合は、停止させて、開始するという余計な処理を行うことになる。
             # 最新のNP_correctから1秒経ったタイミングでrewardを停止する。
             
             if self.reward_stop_call_count == self.call_count:
