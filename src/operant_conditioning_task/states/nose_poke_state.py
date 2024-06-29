@@ -151,11 +151,7 @@ class NosePokeState(State):
 
         else:
             
-            #この処理がここで良いのかは要検討。0.1秒程度かかる可能性があり、その場合他の検出を遅延させる可能性がある。
-            # 最新のNP_correctから1秒経ったタイミングでrewardを停止する。
-            if self.reward_stop_call_count == self.call_count:
-                self._reward_offer.stop_offering()
-
+            
         　　lick_is_pressed = self._task_gpio.check_lick(self.results)
 
             if lick_is_pressed:
@@ -179,7 +175,13 @@ class NosePokeState(State):
                     self._reward_offer.start_offering() # correct timeの登録より先に行うと、_give_rewardが重複して呼び出されるため(?, 要確認)注意
                     self.reward_stop_call_count = reward_start_flag + self.reward_offering_duration * self.lick_detect_hz
                     # 1000秒以内に異なるNP holeがNPされた場合、報酬提供の終了時間は更新される。
+                                     
+            #この処理は最後に行うこと。
+            # 最新のNP_correctから1秒経ったタイミングでrewardを停止する。
             
+            if self.reward_stop_call_count == self.call_count:
+                self._reward_offer.stop_offering()
+
             
 
     def _check_nose_poke(self, nose_poke_time_list, nose_poke_hole_number_list, 
