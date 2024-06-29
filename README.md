@@ -1,8 +1,20 @@
-#　アイデア
-  * ## lick_timeの検出は直接01で行っても良い。
-# 今後の課題
+
+# 今後の課題・アイデア
  * NPの検出にかかる時間が6月の確認では0.03秒で、20hz検出に対応。これが環境条件変わっても安定しているか確認。
     * 確認出来次第、nosepokeとlickのdetect hzを一本化する。
+ * phase2 random itiの実装
+
+ * lick_timeの検出は直接01で行っても良い。
+ * パイプライン実装への流し方を簡略化する。
+    * 解析フォルダの自動作成, ベースとなるcc.h5を自動で用意, フォルダ構造のテンプレ？
+    * 出力ファイルのZドライブへの自動転送
+  * 実験開始前後処理
+    * 以下をGUIで可能にする。 to avoid human errors
+      * phaseの選択, 保存ファイル名
+      * 自動入力, 日付, 実験名,  phase, session, condition(雄雌、疾患モデルか否かetc)
+        * ex,  results_yymmdd_phase~~.csv, log_yymmdd_phase~~.txt
+      * 個体名, (日齢?)->この管理は同様にexcel?
+
 # NB06との違い
   ## hardware
     * NP反応時に点灯するライト, 報酬提供時のライトが赤色
