@@ -57,8 +57,6 @@ class NosePokeState(State):
             raise ValueError("Lick and NP detection frequency ratio is not an integer.")
 
         self.time_out_in_s_NP = 3  # Nose pokeのタイムアウト時間（秒）
-        self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所
-
         self.results = dict()  # 状態の結果を格納する辞書
         self.call_count = -1  # 呼び出しカウンタ
         
@@ -98,7 +96,9 @@ class NosePokeState(State):
             self.results['state_result'] = TaskResult.Skipped
             self._logger.info(self.name + ': Skipped.')
             return
-            
+        
+        
+        self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所, これはこの位置で初期化しないとならない。
         self.call_count = -1  # trialごとに初期化する。(必然性はないが軽量化のため)
         
         # Nose poke hole LEDを点灯
