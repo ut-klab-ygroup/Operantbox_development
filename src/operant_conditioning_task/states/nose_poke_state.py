@@ -106,7 +106,7 @@ class NosePokeState(State):
         self._task_gpio.switch_nose_poke_leds('ON', correct_target_index_list)
 
         self._logger.info("NPmonitor start")
-        start_time = time.perf_counter()　#ここから60秒間
+        start_time = time.perf_counter()#ここから60秒間
         
         nose_poke_time_list, nose_poke_hole_number_list = [], []
         nose_poke_correct_time_list, nose_poke_hole_number_correct_list = [], []
@@ -150,9 +150,7 @@ class NosePokeState(State):
             self._logger.info(f"{self.name}: Task monitoring finished.")
 
         else:
-            
-            
-        　　lick_is_pressed = self._task_gpio.check_lick(self.results)
+            lick_is_pressed = self._task_gpio.check_lick(self.results)
 
             if lick_is_pressed:
                 self._logger.info(self.name + ': Lick detected at ' + str(self.results['lick_time']))
