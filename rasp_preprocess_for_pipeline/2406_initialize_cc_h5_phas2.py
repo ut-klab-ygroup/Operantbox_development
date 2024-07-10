@@ -3,7 +3,8 @@ import numpy as np
 
 # HDF5ファイル名
 #input_filename =      #  　古いデータでおこなうと　itiがことなるためエラーが出る。
-input_filename =
+#input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\cc_template\daytime_prj-00_3CSRTT_cond-random-iti_mouse-name_day00-phase2-session00___cc_data.h5"
+input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\cc_template\\ff.h5"
 # 更新するtrial_numのリスト
 trial_nums = [i for i in range(60)]  # 例として
 
@@ -20,7 +21,7 @@ datasets = ['Lick', 'NP0', 'NP1', 'NP2', 'NP3', 'NP4']
 
 
 # 更新するdownsample_in_hzの値
-new_downsample_in_hz = 2 #検出アルゴリズムに依存
+new_downsample_in_hz = 20 #検出アルゴリズムに依存
 
 # HDF5ファイルを読み書きモードで開く
 with h5py.File(input_filename, 'r+') as file:

@@ -1,9 +1,9 @@
 import h5py
 
 # 既存のHDF5ファイル名
-input_filename = 
+input_filename = "Z:\\D2behavior\\prj5-5\\3CSRTT-phase1\\cc_template\\ff.h5"
 # 新しいHDF5ファイル名
-output_filename = 
+output_filename = "Z:\\D2behavior\\prj5-5\\3CSRTT-phase1\\cc_template\\ff.h5"
 import h5py
 import numpy as np
 import pandas as pd
@@ -12,10 +12,10 @@ import shutil
 
 ###   現状ではconfigに相当する
 # HDF5ファイル名
-#input_filename = 'your_input_file.h5'
 
+input_filename = "Z:\\D2behavior\\prj5-5\\3CSRTT-phase1\\cc_template\\ff.h5"
 # CSVファイルのパス
-csv_path =
+csv_path ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\\raw_raspberypi_nb07\\results_TO36_day04-phase2S01_240609-225158.csv"
 # HDF5ファイルのパス
 hdf5_path = input_filename
 # データセット名のリスト
@@ -73,7 +73,7 @@ with h5py.File(hdf5_path, 'r+') as file:
     for trial_num in df['trial_num'].unique():
         # trial_startの時刻を取得
         #print(i)
-        #trial_num=trial_num_in_df-1
+        
         if trial_num > max(trial_nums):
             break
         print(trial_num)
@@ -151,7 +151,7 @@ with h5py.File(hdf5_path, 'r+') as file:
         print(trial_num)
         
         trial_start = file[f"trial_data/{trial_num:03d}/trial_start"][()]
-
+        
         # actionごとのデータを処理
         for action in ['OP_NP1_correct', 'OP_NP2_correct', 'OP_NP3_correct']:
             # 対応するactionの行をフィルタリング
@@ -188,6 +188,3 @@ print("データの更新が完了しました")
 
 # 入力ファイルを変更した後に、そのファイルを出力ファイルパスにコピー
 shutil.copy(input_filename, output_filename)
-
-
-print("データの更新が完了しました")
