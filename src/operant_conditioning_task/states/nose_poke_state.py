@@ -130,20 +130,13 @@ class NosePokeState(State):
                                     nose_poke_hole_number_correct_list=nose_poke_hole_number_correct_list,
                                     lick_time_list=lick_time_list, wait_time=wait_time)
         
-        #signal.signal(signal.SIGALRM, self.handler)
-        #signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
-
-        #これはhandler内部の分岐とはまとめられない?検討。handler内部での分岐はその都度現在時刻をえる必要があり、それには内部でcurrent timeを得る必要がある。
-        #予定時刻を超えるまでの間は、sleepが起こり、monitor taskは終わらない。そのsleepの間に次のhandlerが割り込む。しかし、
-        #予定時刻を超えた場合、handlerの呼び出しが終了し、さらに、sleepも0.01秒となる。
-        
         while True :
+            current_time = time.perf_counter() #current_timeは必ずこの位置にする。breakの前にhandlerを呼び出し結果を保存するため。
             signal.signal(signal.SIGALRM, self.handler)
             signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
             while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
-                time.sleep(0.01) 
-            current_time = time.perf_counter()
+                time.sleep(0.01)
             if current_time - start_time > phase_settings.stimulus_duration_in_s + wait_time:
                 time.sleep(0.01)
                 break
