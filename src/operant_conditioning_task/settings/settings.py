@@ -67,7 +67,7 @@ class Settings:
         # ===== 固定の設定パラメーター =====
 
         # nose poke に使用するターゲットの番号です。
-        self.NOSE_POKE_TARGETS = np.array([4, 3, 2, 1, 0])
+        self.NOSE_POKE_TARGETS = np.array([0, 1, 2, 3, 4])
 
         # Raspberry Pi の GPIO の端子の割り当てです。
         self.pin_assignment = dict()

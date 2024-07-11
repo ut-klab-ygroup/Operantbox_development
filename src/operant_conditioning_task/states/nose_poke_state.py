@@ -59,6 +59,7 @@ class NosePokeState(State):
         self.time_out_in_s_NP = 3  # Nose pokeのタイムアウト時間（秒）
         self.results = dict()  # 状態の結果を格納する辞書
         self.call_count = -1  # 呼び出しカウンタ
+
         
 
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
@@ -97,6 +98,12 @@ class NosePokeState(State):
             self._logger.info(self.name + ': Skipped.')
             return
         
+        #todo：現在ONかどうかを調べてOFFの場合のみONとした方がキレイ。
+        # Nose poke hole LEDを点灯
+        correct_target_index_list = self._settings.get_correct_target_index_list()
+        self._task_gpio.switch_nose_poke_leds('ON', correct_target_index_list)
+        # LEDを消灯
+        #self._task_gpio.switch_nose_poke_leds('OFF')
         
         self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所, これはこの位置で初期化しないとならない。
         self.call_count = -1  # trialごとに初期化する。(必然性はないが軽量化のため)
@@ -105,9 +112,7 @@ class NosePokeState(State):
         wait_list = phase_settings.variable_interval_in_s
         wait_time = wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
 
-        # Nose poke hole LEDを点灯
-        correct_target_index_list = self._settings.get_correct_target_index_list()
-        self._task_gpio.switch_nose_poke_leds('ON', correct_target_index_list)
+        
 
         self._logger.info("NPmonitor start")
         start_time = time.perf_counter()#ここから60秒間
@@ -130,8 +135,7 @@ class NosePokeState(State):
         while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
             time.sleep(0.05)  # CPU使用率を低下させるためにスリープ
             
-        # LEDを消灯
-        self._task_gpio.switch_nose_poke_leds('OFF')
+        
 
     
     #周期的に呼び出されるhandler, lick検出の指定振動数で呼び出される。
