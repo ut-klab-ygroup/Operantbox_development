@@ -119,7 +119,7 @@ class DelayState(State):
             return
 
         # Turn off the chamber light.
-        self._task_gpio.switch_chamber_light('OFF')
+        self._task_gpio.switch_chamber_light('ON')
         start_time = time.perf_counter()
         wait_list = phase_settings.variable_interval_in_s
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
