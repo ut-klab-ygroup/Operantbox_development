@@ -13,6 +13,7 @@ from states.task_result_enum import TaskResult
 from music import speaker
 import signal
 import functools
+import psutil
 
 
 class NosePokeState(State):
@@ -50,6 +51,9 @@ class NosePokeState(State):
         self.NP_detect_hz = 20  # Nose poke検出のためのサンプリングレート（Hz）
         self.reward_offering_duration = 1  # 報酬提供の持続時間（秒）
         self.reward_stop_call_count = -1  # 報酬停止のためのカウンター
+
+        self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所, これはこの位置で初期化しないとならない。
+        self.call_count = -1  # trialごとの初期化では、trialにまたがるCSが止まらなくなるため不可。(必然性はないが軽量化のため)
 
         # サンプリングレート比の計算
         sampling_ratio_ratio = self.lick_detect_hz / self.NP_detect_hz
@@ -104,16 +108,13 @@ class NosePokeState(State):
         self._task_gpio.switch_nose_poke_leds('ON', correct_target_index_list)
         # LEDを消灯
         #self._task_gpio.switch_nose_poke_leds('OFF')
-        
+
         self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所, これはこの位置で初期化しないとならない。
-        self.call_count = -1  # trialごとに初期化する。(必然性はないが軽量化のため)
-        
+
         #trialごとにintervalを再設定する
         wait_list = phase_settings.variable_interval_in_s
-        wait_time = wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
-
+        wait_time = wait_list[(self._settings.current_trial_num ) % len(wait_list)]
         
-
         self._logger.info("NPmonitor start")
         start_time = time.perf_counter()#ここから60秒間
         
@@ -129,15 +130,26 @@ class NosePokeState(State):
                                     nose_poke_hole_number_correct_list=nose_poke_hole_number_correct_list,
                                     lick_time_list=lick_time_list, wait_time=wait_time)
         
-        signal.signal(signal.SIGALRM, self.handler)
-        signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
+        #signal.signal(signal.SIGALRM, self.handler)
+        #signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
 
-        while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
-            time.sleep(0.05)  # CPU使用率を低下させるためにスリープ
+        #これはhandler内部の分岐とはまとめられない?検討。handler内部での分岐はその都度現在時刻をえる必要があり、それには内部でcurrent timeを得る必要がある。
+        #予定時刻を超えるまでの間は、sleepが起こり、monitor taskは終わらない。そのsleepの間に次のhandlerが割り込む。しかし、
+        #予定時刻を超えた場合、handlerの呼び出しが終了し、さらに、sleepも0.01秒となる。
+        
+        while True :
+            signal.signal(signal.SIGALRM, self.handler)
+            signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
+
+            while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
+                time.sleep(0.01) 
+            current_time = time.perf_counter()
+            if current_time - start_time > phase_settings.stimulus_duration_in_s + wait_time:
+                time.sleep(0.01)
+                break
+
             
         
-
-    
     #周期的に呼び出されるhandler, lick検出の指定振動数で呼び出される。
     def _combined_signal_handler(self, signum, frame, start_time, phase_settings, 
                                  nose_poke_time_list, nose_poke_hole_number_list, 
@@ -145,7 +157,8 @@ class NosePokeState(State):
                                  lick_time_list, wait_time):
         self.call_count+=1
         current_time = time.perf_counter()
-
+        #cpu_usage = psutil.cpu_percent(interval=None) 
+        #self._logger.info(f"CPU Usage: {cpu_usage}%")
         #  phase_settings.stimulus_duration_in_s(60秒間)経つと終了する。
         if current_time - start_time > phase_settings.stimulus_duration_in_s + wait_time :
             signal.setitimer(signal.ITIMER_REAL, 0)
@@ -156,6 +169,7 @@ class NosePokeState(State):
             self.results['nose_poke_hole_number_correct_list'] = nose_poke_hole_number_correct_list
             self.results['lick_time_list'] = lick_time_list
             self._logger.info(f"{self.name}: Task monitoring finished.")
+            
 
         else:
             lick_is_pressed = self._task_gpio.check_lick(self.results)
