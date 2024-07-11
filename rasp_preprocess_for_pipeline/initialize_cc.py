@@ -8,9 +8,9 @@ input_filename ="Z:\D2behavior\prj5-5\\3CSRTT-phase1\\cc_template\daytime_prj-00
 # 更新するtrial_numのリスト
 trial_nums = [i for i in range(100)]  # 例として
 
-# wait_time_in_sとwait_time_listを定義（これらは適宜変更してください）
+# wait_time_in_sとvariable_interval_in_sを定義（これらは適宜変更してください）
 wait_time_in_s = 14
-wait_time_list = [8,7,5,2,10,2,6,7,4,5,1,3,1,10,2,3,4,2,6,10,9,6,9,3,1,5,3,9,5,2,2,8,9,1,9,7,3,8,1,8,8,10,5,8,6,3,4,6,4,9,7,2,7,5,4,1,10,5,1,9,7,1,4,4,7,6,10,7,1,2,9,3,10,10,6,8,6,2,4,3,2,3,8,6,10,8,1,6,4,5,9,4,7,3,5,7,9,10,8,5]
+variable_interval_in_s = [8,7,5,2,10,2,6,7,4,5,1,3,1,10,2,3,4,2,6,10,9,6,9,3,1,5,3,9,5,2,2,8,9,1,9,7,3,8,1,8,8,10,5,8,6,3,4,6,4,9,7,2,7,5,4,1,10,5,1,9,7,1,4,4,7,6,10,7,1,2,9,3,10,10,6,8,6,2,4,3,2,3,8,6,10,8,1,6,4,5,9,4,7,3,5,7,9,10,8,5]
 # このリストの長さはtrial_numsと一致する必要がある
 
 # データセット名のリスト
@@ -33,7 +33,7 @@ with h5py.File(input_filename, 'r+') as file:
             downsample_path = f"param_dev/dev1_ai_task/{dataset}/downsample_in_hz"
             if downsample_path in file:
                 file[downsample_path][()] = new_downsample_in_hz
-                num_zeros = int((wait_time_in_s + max(wait_time_list)) * new_downsample_in_hz)
+                num_zeros = int((wait_time_in_s + max(variable_interval_in_s)) * new_downsample_in_hz)
                 zeros_data = np.zeros(num_zeros, dtype=np.int32)
                 data_path = f"trial_data/{formatted_trial_num}/{dataset}"
                 if data_path in file:
@@ -60,7 +60,7 @@ with h5py.File(input_filename, 'r+') as file:
             if downsample_path in file:
                 downsample_in_hz = file[downsample_path][()]
                 # 生成するデータの数を計算
-                num_zeros = int((wait_time_in_s + max(wait_time_list)) * downsample_in_hz)
+                num_zeros = int((wait_time_in_s + max(variable_interval_in_s)) * downsample_in_hz)
                 print(num_zeros)
                 # ゼロで埋める配列を作成
                 zeros_data = np.zeros(num_zeros, dtype=np.int)

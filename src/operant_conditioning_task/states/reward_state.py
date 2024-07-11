@@ -57,7 +57,7 @@ class RewardState(State):
         if phase_settings.reward_state_skip == 1:
             #self.results['state_result'] = TaskResult.Skipped
             self._logger.info(self.name + ': Skipped.')
-            #wait_list = phase_settings.wait_time_list
+            #wait_list = phase_settings.variable_interval_in_s
             #wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         
             return

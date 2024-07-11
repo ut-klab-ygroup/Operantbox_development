@@ -101,6 +101,10 @@ class NosePokeState(State):
         self.call_count_last_NP_correct_list = [-1000, -1000, -1000, -1000]  # last NP_correctの記録場所, これはこの位置で初期化しないとならない。
         self.call_count = -1  # trialごとに初期化する。(必然性はないが軽量化のため)
         
+        #trialごとにintervalを再設定する
+        wait_list = phase_settings.variable_interval_in_s
+        wait_time = wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
+
         # Nose poke hole LEDを点灯
         correct_target_index_list = self._settings.get_correct_target_index_list()
         self._task_gpio.switch_nose_poke_leds('ON', correct_target_index_list)
@@ -118,7 +122,7 @@ class NosePokeState(State):
                                     nose_poke_hole_number_list=nose_poke_hole_number_list,
                                     nose_poke_correct_time_list=nose_poke_correct_time_list, 
                                     nose_poke_hole_number_correct_list=nose_poke_hole_number_correct_list,
-                                    lick_time_list=lick_time_list)
+                                    lick_time_list=lick_time_list, wait_time=wait_time)
         
         signal.signal(signal.SIGALRM, self.handler)
         signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
@@ -129,17 +133,17 @@ class NosePokeState(State):
         # LEDを消灯
         self._task_gpio.switch_nose_poke_leds('OFF')
 
-
+    
     #周期的に呼び出されるhandler, lick検出の指定振動数で呼び出される。
     def _combined_signal_handler(self, signum, frame, start_time, phase_settings, 
                                  nose_poke_time_list, nose_poke_hole_number_list, 
                                  nose_poke_correct_time_list, nose_poke_hole_number_correct_list,
-                                 lick_time_list):
+                                 lick_time_list, wait_time):
         self.call_count+=1
         current_time = time.perf_counter()
 
         #  phase_settings.stimulus_duration_in_s(60秒間)経つと終了する。
-        if current_time - start_time > phase_settings.stimulus_duration_in_s:
+        if current_time - start_time > phase_settings.stimulus_duration_in_s + wait_time :
             signal.setitimer(signal.ITIMER_REAL, 0)
             self.results['state_result'] = TaskResult.Success
             self.results['nose_poke_time_list'] = nose_poke_time_list

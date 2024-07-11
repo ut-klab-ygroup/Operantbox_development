@@ -121,7 +121,7 @@ class DelayState(State):
         # Turn off the chamber light.
         self._task_gpio.switch_chamber_light('OFF')
         start_time = time.perf_counter()
-        wait_list = phase_settings.wait_time_list
+        wait_list = phase_settings.variable_interval_in_s
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
         handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
