@@ -126,7 +126,7 @@ class DelayState(State):
         lick_time_list = []
         self.handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
         
-        signal.signal(signal.SIGALRM, handler)
+        signal.signal(signal.SIGALRM, self.handler)
         signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
         
         try:
