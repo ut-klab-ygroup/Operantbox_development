@@ -124,17 +124,17 @@ class DelayState(State):
         wait_list = phase_settings.variable_interval_in_s
         wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
         lick_time_list = []
-        handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
-
-        while True:
-            current_time = time.perf_counter() #current_timeは必ずこの位置にする。breakの前にhandlerを呼び出し結果を保存するため。
-            # Set the signal handler for SIGALRM.
-            signal.signal(signal.SIGALRM, handler)
-            # Configure the timer to fire every 0.1 seconds.
-            signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
-            # Wait for the signal handler to end the monitoring.
-            while signal.getitimer(signal.ITIMER_REAL)[0] != 0:
-                time.sleep(0.1)  # Sleep to prevent high CPU usage, only wake to check if timer is still running.
-            if time.perf_counter() - start_time > wait_time:
+        self.handler = functools.partial(self._signal_handler, wait_time=wait_time, lick_time_list=lick_time_list, start_time=start_time)
+        
+        signal.signal(signal.SIGALRM, handler)
+        signal.setitimer(signal.ITIMER_REAL, 1/self.lick_detect_hz, 1/self.lick_detect_hz)
+        
+        try:
+            while True:
+                current_time = time.perf_counter()
+                if current_time - start_time > wait_time:
+                    self.handler(None, None)  # 直接ハンドラを呼び出す
+                    break
                 time.sleep(0.01)
-                break
+        finally:
+            signal.setitimer(signal.ITIMER_REAL, 0)  # タイマーを停止
