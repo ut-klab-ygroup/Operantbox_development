@@ -38,7 +38,7 @@ limited_hold_in_s = 0
 stimulus_duration_in_s = 0
 
 [phase2]
-x = [[2, 3, 4], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
+x = [[3, 4, 5], [3, 4, 5], [3, 4, 5], [3, 4, 5], [4], [3]]
 is_nose_poke_skip = false
 is_lick_wait = false
 is_perservative = false
