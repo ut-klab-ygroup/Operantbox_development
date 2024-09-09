@@ -71,6 +71,7 @@ class Settings:
         self.pin_assignment['reward_led'] = 21
         self.pin_assignment['reward_buzzer'] = 2
         self.pin_assignment['reward_pump'] = 7
+        self.pin_assignment['house_led_control'] = 27 #NIDAQ回路を無効化
 
         # ===== その他の設定パラメーター =====
 

@@ -30,6 +30,8 @@ class TaskGpio:
         self._reward_led = LED(pin_assignment['reward_led'])
         self._reward_buzzer = LED(pin_assignment['reward_buzzer'])
         self._reward_pump = LED(pin_assignment['reward_pump'])
+        self._house_led_control = LED(pin_assignment['house_led_control'])
+        self._house_led_control.on()
 
         # ログ出力を行うオブジェクトです。
         self._logger = logger
