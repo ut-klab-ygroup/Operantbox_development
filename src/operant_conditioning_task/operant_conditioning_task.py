@@ -30,7 +30,7 @@ def main():
 
     try:
         # 設定ファイルを読み込み、設定オブジェクトを生成します。
-        settings = Settings(args.experiment_name, args.setting_file_path)
+        settings = Settings(args.experiment_name, args.setting_file_path, args.start_phase)
 
         # ログ出力を行うオブジェクトを生成します。
         logger = utility.create_logger(args.log_file_path, settings.show_verbose_log)
@@ -112,6 +112,14 @@ def create_commandline_parser():
         required=False,
         help='テキスト形式のログ ファイル (*.txt) のパスです。'
              '指定しない場合は、ルート フォルダーに現在の日時 (log_<yymmdd-HHMMSS>.txt) でファイルを生成します。'
+    )
+    
+    # 開始フェーズ設定
+    commandline_parser.add_argument(
+        '-p', '--phase', dest='start_phase', default=None,
+        required=False,
+        help='開始フェーズの名前です。'
+             '指定しない場合は、設定ファイルに記述されているものを使用します。'
     )
 
     return commandline_parser
