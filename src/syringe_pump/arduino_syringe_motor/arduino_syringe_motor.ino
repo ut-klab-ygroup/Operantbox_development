@@ -24,7 +24,7 @@ int val;    // GPIO Trigger signal read from GPIO#3
 char incomingByte = 0; // for incoming serial data
 
 void setup() {
-  pinMode (3, INPUT); // Input triggering for water, 5V water out, 0V stop
+  pinMode (3, INPUT_PULLUP); // Input triggering for water, 5V water out, 0V stop
   pinMode (8, OUTPUT);  // used to control motor enable/disable
   Serial.begin(BAUD_RATE);
   stepper.setMaxSpeed(SPEED);   //max speed steps per second settiing
@@ -50,7 +50,7 @@ void loop() {
   stepper.setCurrentPosition(0);
 
   
-  if (val == HIGH && k < PUSH_MAX ) {
+  if (val == LOW && k < PUSH_MAX ) {
     Serial.println("Trigger detected");
     digitalWrite(8, LOW);  // Enable Motor
     i = stepper.currentPosition() - PUSH_POSITION_DELTA;
