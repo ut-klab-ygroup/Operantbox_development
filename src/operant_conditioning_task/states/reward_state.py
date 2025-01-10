@@ -52,6 +52,16 @@ class RewardState(State):
         # GPIO の現在の状態を再設定します。
         self._task_gpio.reset_state(self.name)
 
+        phase_settings = self._settings.get_phase_settings()
+
+        if phase_settings.reward_state_skip == 1:
+            #self.results['state_result'] = TaskResult.Skipped
+            self._logger.info(self.name + ': Skipped.')
+            #wait_list = phase_settings.variable_interval_in_s
+            #wait_time = phase_settings.wait_time_in_s + wait_list[(self._settings.current_trial_num - 1) % len(wait_list)]
+        
+            return
+
         # 報酬を付与します。
         self._give_reward()
 
@@ -60,7 +70,7 @@ class RewardState(State):
     # 状態終了時に呼び出される State クラスの on_exit コールバックです。
     def exit(self, event_data):
         pass
-
+    """
     # 報酬を付与します。
     def _give_reward(self):
 
@@ -85,3 +95,29 @@ class RewardState(State):
 
         #WAVファイルの停止
         speaker.stop_wav()
+    """
+
+    def _give_reward(self):
+        # 報酬用 LED を点灯します。
+        self._task_gpio.switch_reward_led('ON')
+
+        # 報酬用ブザーを鳴らします。
+        #self._task_gpio.trigger_reward_buzzer()
+
+        speaker.play_wav("/home/share/Operantbox_development/src/operant_conditioning_task/music/6000Hz_sin_wave.wav")
+
+        # シリンジ ポンプを駆動します。
+        self._task_gpio.trigger_reward_pump()
+
+        # すべての動作が1秒間続くように待機します。
+        time.sleep(1)
+
+        # 報酬用 LED を消灯します。
+        self._task_gpio.switch_reward_led('OFF')
+
+        # ブザーの停止（もし必要であればコードを追加）
+        #self._task_gpio.stop_reward_buzzer()
+
+        # WAVファイルの停止（もし音声ファイルの再生があれば）
+        speaker.stop_wav()
+

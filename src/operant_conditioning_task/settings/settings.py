@@ -21,7 +21,7 @@ class Settings:
     """
 
     # 各設定パラメーターを初期化します。
-    def __init__(self, experiment_name, setting_file_path):
+    def __init__(self, experiment_name, setting_file_path, start_phase):
 
         # ===== 設定ファイルで初期化されるパラメーター =====
 
@@ -33,7 +33,9 @@ class Settings:
             self._phase_list = settings_dict['phase_list']
 
             # 現在指定されている設定フェーズのリストにおけるインデックスです。
-            self._current_phase_index = self._phase_list.index(settings_dict['current_phase'])
+            if start_phase == None:
+                start_phase = settings_dict['current_phase']
+            self._current_phase_index = self._phase_list.index(start_phase)
 
             # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
             self._num_trials_before = settings_dict['num_trials_before']
@@ -52,6 +54,13 @@ class Settings:
             self._phase_settings_dict = dict()
             for phase_name in self._phase_list:
                 self._phase_settings_dict[phase_name] = PhaseSettings(settings_dict[phase_name])
+            
+            # 指定した試行回数で実験を停止します。 # -1 の場合は、無制限です。
+            
+            self.num_trials_per_experiment = self._phase_settings_dict[self._phase_list[self._current_phase_index]].num_trials_per_experiment  # 指定した試行回数で実験を停止します。 # -1 の場合は、無制限です。
+            
+        
+
 
         except Exception as exception:
             raise OperantConditioningSettingError(f'{type(exception)} {exception}.\n'
@@ -60,7 +69,7 @@ class Settings:
         # ===== 固定の設定パラメーター =====
 
         # nose poke に使用するターゲットの番号です。
-        self.NOSE_POKE_TARGETS = np.array([1, 2, 3, 4, 5])
+        self.NOSE_POKE_TARGETS = np.array([0, 1, 2, 3, 4])
 
         # Raspberry Pi の GPIO の端子の割り当てです。
         self.pin_assignment = dict()
@@ -74,30 +83,22 @@ class Settings:
 
         # ===== その他の設定パラメーター =====
 
-        # 実験の名前です。
-        self.experiment_name = experiment_name
-
-        # 現在の試行番号です。
-        self.current_trial_num = 0
-
-        # 現在の設定フェーズにおける試行番号です。
-        self._trial_num_in_phase = 0
-
-        # 指定した試行回数で実験を停止します。
-        # -1 の場合は、無制限です。
-        self.num_trials_per_experiment = -1
-
-        # 実験の停止要求を示すフラグです。
-        self.cancel_flag = False
-
-        # 詳細なログ情報をコンソールに出力するかどうかのフラグです。
-        self.show_verbose_log = False
-
+        
+        self.experiment_name = experiment_name # 実験の名前です。
+        self.current_trial_num = -1 # 現在の試行番号です。
+        self._trial_num_in_phase = 0 # 現在の設定フェーズにおける試行番号です。
+        #self.num_trials_per_experiment =-1# settings_dict['phase1']['max_trial'] # 指定した試行回数で実験を停止します。 # -1 の場合は、無制限です。
+        #self.num_trials_per_experiment = self._phase_settings_dict[self._phase_list[self._current_phase_index]]
+        self.cancel_flag = False# 実験の停止要求を示すフラグです。
+        self.show_verbose_log = False # 詳細なログ情報をコンソールに出力するかどうかのフラグです。
+        
+        
+        
         # ===== デバッグ用設定 =====
-
         # ステート マシンのスケルトンをデバッグ実行するため、各状態の具体的な処理をスキップします。
         self.debug = dict()
         self.debug['skip_state'] = False
+        
 
     # 現在指定されているフェーズ設定を PhaseSettings オブジェクト型で取得します。
     def get_phase_settings(self):
@@ -171,12 +172,15 @@ class PhaseSettings:
         self.x = phase_settings_dict['x']
         self.is_nose_poke_skip = phase_settings_dict['is_nose_poke_skip']
         self.is_lick_wait = phase_settings_dict['is_lick_wait']
+        self.delay_state_skip = phase_settings_dict['delay_state_skip']
+        self.reward_state_skip =phase_settings_dict['reward_state_skip']
         self.is_perservative = phase_settings_dict['is_perservative']
         self.wait_time_in_s = phase_settings_dict['wait_time_in_s']
-        self.wait_time_list = phase_settings_dict['wait_time_list']
+        self.variable_interval_in_s = phase_settings_dict['variable_interval_in_s']
         self.timeout_in_s = phase_settings_dict['timeout_in_s']
         self.stimulus_duration_in_s = phase_settings_dict['stimulus_duration_in_s']
         self.limited_hold_in_s = phase_settings_dict['limited_hold_in_s']
+        self.num_trials_per_experiment = phase_settings_dict['num_trials_per_experiment']
 
 
 # 設定クラスのテスト
@@ -192,9 +196,9 @@ if __name__ == '__main__':
         if key == '_phase_settings_dict':
             for phase_name, phase_settings in val.items():
                 print(f'{phase_name} = [x = {phase_settings.x}, is_nose_poke_skip = {phase_settings.is_nose_poke_skip}, '
-                      f'is_lick_wait = {phase_settings.is_lick_wait}, is_perservative = {phase_settings.is_perservative}, '
+                      f'is_lick_wait = {phase_settings.is_lick_wait},delay_state_skip = {phase_settings.delay_state_skip},reward_state_skip = {phase_settings.reward_state_skip}, is_perservative = {phase_settings.is_perservative}, '
                       f'wait_time_in_s = {phase_settings.wait_time_in_s}, timeout_in_s = {phase_settings.timeout_in_s}, '
                       f'limited_hold_in_s = {phase_settings.limited_hold_in_s}, '
-                      f'stimulus_duration_in_s = {phase_settings.stimulus_duration_in_s}]')
+                      f'stimulus_duration_in_s = {phase_settings.stimulus_duration_in_s}, num_trials_per_experiment = {phase_settings.num_trials_per_experiment}]')
         else:
             print(f'{key} = {val}')
