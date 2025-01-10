@@ -36,8 +36,6 @@ class LickState(State):
         # 情報のログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
 
-        self._reward_offer=kwargs['reward_offer'] #rewardの提供を制御するオブジェクトです。
-
         # 状態の結果データです。
         # 成功/失敗などの状態の結果は、self.results['state_result'] に StatusResult 列挙型で格納します。
         self.results = dict()

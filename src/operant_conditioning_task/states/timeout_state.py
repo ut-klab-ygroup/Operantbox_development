@@ -34,8 +34,6 @@ class TimeoutState(State):
         # ログ出力を行うオブジェクトです。
         self._logger = kwargs['logger']
 
-        self._reward_offer=kwargs['reward_offer'] #rewardの提供を制御するオブジェクトです。
-
     # 状態開始時に呼び出される State クラスの on_enter コールバックです。
     # タイムアウト状態の処理を開始します。
     def enter(self, event_data):
