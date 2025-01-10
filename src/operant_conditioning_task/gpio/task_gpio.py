@@ -17,10 +17,9 @@ class TaskGpio:
     """
 
     def __init__(self, pin_assignment, logger):
-
         # デジタル入出力を行うオブジェクトを生成します。
         self._chamber_light = LED(pin_assignment['chamber_light'])
-        self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05)
+        self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05, active_state=True, pull_up=None)
         self._nose_poke_leds = [PWMLED(p, initial_value=0, frequency=100) for p in pin_assignment['nose_poke_leds']]
         self._nose_poke_pin_assignment = np.array(pin_assignment['nose_poke_sensors'])
         self._nose_poke_sensors = []
@@ -51,6 +50,15 @@ class TaskGpio:
         # Lick 行動と nose poke 行動の検出を開始します。
         self._detect_lick()
         self._detect_nose_poke()
+
+    # LED等をオフにする. 実験終了時などに使用
+    def reset_gpio(self):
+        self._chamber_light.off()
+        for led in self._nose_poke_leds:
+            led.off()
+        self._reward_led.off()
+        self._reward_buzzer.off()
+        self._house_led_control.on()
 
     # 現在の状態を再設定します。
     def reset_state(self, state_name):
@@ -163,11 +171,10 @@ class TaskGpio:
     # 報酬用ポンプを駆動します。
     def trigger_reward_pump(self):
         self._trigger_single_device(self._reward_pump)
-    
+
 
 # GPIO クラスのテスト
 if __name__ == '__main__':
-    
     print('===== GPIO test =====')
     
     from pathlib import Path

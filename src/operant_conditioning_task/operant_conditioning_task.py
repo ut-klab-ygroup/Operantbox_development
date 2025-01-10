@@ -67,6 +67,7 @@ def main():
     finally:
         try:
             task_results.results_file.close()
+            task_gpio.reset_gpio()
         except:
             pass
 
