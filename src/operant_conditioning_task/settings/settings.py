@@ -21,7 +21,7 @@ class Settings:
     """
 
     # 各設定パラメーターを初期化します。
-    def __init__(self, experiment_name, setting_file_path):
+    def __init__(self, experiment_name, setting_file_path, start_phase):
 
         # ===== 設定ファイルで初期化されるパラメーター =====
 
@@ -33,7 +33,9 @@ class Settings:
             self._phase_list = settings_dict['phase_list']
 
             # 現在指定されている設定フェーズのリストにおけるインデックスです。
-            self._current_phase_index = self._phase_list.index(settings_dict['current_phase'])
+            if start_phase == None:
+                start_phase = settings_dict['current_phase']
+            self._current_phase_index = self._phase_list.index(start_phase)
 
             # 設定フェーズ phase1 の更新判定の評価に用いる現在の試行からの試行回数です。
             self._num_trials_before = settings_dict['num_trials_before']

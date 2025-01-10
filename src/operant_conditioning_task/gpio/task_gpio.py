@@ -20,7 +20,7 @@ class TaskGpio:
 
         # デジタル入出力を行うオブジェクトを生成します。
         self._chamber_light = LED(pin_assignment['chamber_light'])
-        self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05)
+        self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05, active_state=True, pull_up=None)
         self._nose_poke_leds = LEDBoard(*pin_assignment['nose_poke_leds'])
         self._nose_poke_pin_assignment = np.array(pin_assignment['nose_poke_sensors'])
         self._nose_poke_sensors = []
