@@ -23,16 +23,12 @@ class TaskResults:
         # 結果データを保存する CSV 形式ファイルを用意します。
         self.results_file = open(results_file_path, 'w', newline='')
         self._results_file_writer = csv.writer(self.results_file, delimiter=',')
-        #self._results_file_writer.writerow(['elapsed_time', 'trial_num', 'state_name', 'action', 'data1', 'data2'])
-        #elapsed timeではなく、unix timeとして処理するようにする。元々の処理はelapsed timeだったため、timeとして、両方よいようにする。
-        self._results_file_writer.writerow(['time', 'trial_num', 'state_name', 'action', 'data1', 'data2'])
-
+        self._results_file_writer.writerow(['elapsed_time', 'trial_num', 'state_name', 'action', 'data1', 'data2'])
 
         # ===== インスタンス変数 =====
 
         # 実験の開始時刻 (UNIX 時間、sec) です。
         self._start_time = 0
-
 
         # Lick 行動の時系列データです。
         self._lick_results = dict()
@@ -40,24 +36,6 @@ class TaskResults:
         self._lick_results['trial_num'] = []        # 試行番号 (int)
         self._lick_results['state_name'] = []       # 状態の名前 (str)
         self._lick_results['response_time'] = []    # キューの呈示から lick 行動までの反応時間 (msec)
-
-        # delay statesにおけるlick時刻のデータ
-        self._multiple_licks_results = dict()
-        self._multiple_licks_results['trial_num'] = []     # 実験開始からの経過時間 (msec; int)
-        self._multiple_licks_results['lick_unix_times_list_for_trial'] = []        # 試行番号 (int)
-        self._multiple_licks_results['state_name'] = []       # 状態の名前 (str)
-
-        # nose pokes statesにおける時系列データ
-        self._multiple_nose_pokes_results = dict()
-        self._multiple_nose_pokes_results['trial_num']=[]    # 実験開始からの経過時間 (msec; int)
-        #self._multiple_nose_pokes_results['lick_times_list_for_trial'].append(lick_time_list_for_trial) 
-        #以下の二つがindexに対して対応している。
-        self._multiple_nose_pokes_results['nose_poke_unix_time_list_for_trial']=[] 
-        self._multiple_nose_pokes_results['nose_poke_hole_number_list_for_trial']=[]
-        #以下の二つがindexに対して、対応している。
-        self._multiple_nose_pokes_results['nose_poke_correct_unix_time_list_for_trial']=[]
-        self._multiple_nose_pokes_results['nose_poke_hole_number_correct_list_for_trial']=[]
-        self._multiple_nose_pokes_results['state_name']=[]
 
         # Nose poke 行動の時系列データです。
         self._nose_poke_results = dict()
@@ -82,38 +60,6 @@ class TaskResults:
 
         # 結果ファイルに保存します。
         self._results_file_writer.writerow([elapsed_time, trial_num, state_name, 'Lick', response_time, ''])
-    # delay stateにおけるlicksを記録する
-    def store_multiple_licks_results_for_trial(self, trial_num, lick_unix_time_list_for_trial, state_name):
-        self._multiple_licks_results['trial_num'].append(trial_num)    # 実験開始からの経過時間 (msec; int)
-        self._multiple_licks_results['lick_unix_times_list_for_trial'].append(lick_unix_time_list_for_trial)      # 試行番号 (int)
-        self._multiple_licks_results['state_name'].append(state_name)
-        for i in range(len(lick_unix_time_list_for_trial)):
-            unix_time=lick_unix_time_list_for_trial[i]
-            self._results_file_writer.writerow([unix_time, trial_num, state_name, 'Lick', 1, ''])
-            
-    def store_multiple_nose_pokes_results_for_trial(self, trial_num, nose_poke_unix_time_list_for_trial,nose_poke_hole_number_list_for_trial,nose_poke_correct_unix_time_list_for_trial, nose_poke_hole_number_correct_list_for_trial ,state_name):
-        self._multiple_nose_pokes_results['trial_num'].append(trial_num)    # 実験開始からの経過時間 (msec; int)
-        #self._multiple_nose_pokes_results['lick_times_list_for_trial'].append(lick_time_list_for_trial) 
-        #以下の二つがindexに対して対応している。
-        self._multiple_nose_pokes_results['nose_poke_unix_time_list_for_trial'].append(nose_poke_unix_time_list_for_trial) 
-        self._multiple_nose_pokes_results['nose_poke_hole_number_list_for_trial'].append(nose_poke_hole_number_list_for_trial) 
-
-        #以下の二つがindexに対して、対応している。
-        self._multiple_nose_pokes_results['nose_poke_correct_unix_time_list_for_trial'].append(nose_poke_correct_unix_time_list_for_trial) 
-        self._multiple_nose_pokes_results['nose_poke_hole_number_correct_list_for_trial'].append(nose_poke_hole_number_correct_list_for_trial) 
-
-        self._multiple_nose_pokes_results['state_name'].append(state_name)
-        
-        for i in range(len(nose_poke_unix_time_list_for_trial)):
-            unix_time=nose_poke_unix_time_list_for_trial[i]
-            self._results_file_writer.writerow([unix_time, trial_num, state_name, f'NP{nose_poke_hole_number_list_for_trial[i]}', 1, ''])
-        for i in range(len(nose_poke_correct_unix_time_list_for_trial)):
-            unix_time=nose_poke_correct_unix_time_list_for_trial[i]
-            self._results_file_writer.writerow([unix_time, trial_num, state_name, f'OP_NP{nose_poke_hole_number_correct_list_for_trial[i]}_correct', 1, ''])
-
-    def store_trial_start(self, trial_num, trial_start_unix_time):
-        self._results_file_writer.writerow([trial_start_unix_time, trial_num, "Trial_Start", 'trial_start', 1, ''])
-
 
     # Nose poke 行動の結果を記録します。
     def store_nose_poke_results(self, unix_time, trial_num, state_name, target_num, is_correct):

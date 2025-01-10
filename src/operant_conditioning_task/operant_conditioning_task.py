@@ -9,7 +9,6 @@ Raspberry Pi でマウスのオペラント条件付け行動課題実験を行�
 import argparse as ap
 import datetime
 import sys
-import traceback
 
 from gpio.task_gpio import TaskGpio
 from settings.settings import Settings
@@ -31,8 +30,8 @@ def main():
 
     try:
         # 設定ファイルを読み込み、設定オブジェクトを生成します。
-        settings = Settings(args.experiment_name, args.setting_file_path, args.start_phase)
-       
+        settings = Settings(args.experiment_name, args.setting_file_path)
+
         # ログ出力を行うオブジェクトを生成します。
         logger = utility.create_logger(args.log_file_path, settings.show_verbose_log)
 
@@ -50,7 +49,6 @@ def main():
         logger.info(f'Program: "{PROGRAM_NAME}-{PROGRAM_VERSION}" started.')
         logger.info(f'Program: Setting file: {args.setting_file_path}.')
         state_machine_model.trigger('SetNextTrial')
-    
 
     except KeyboardInterrupt:
         logger.info('Program: Stopped.')
@@ -63,12 +61,6 @@ def main():
         sys.exit(1)
     except Exception as exception:
         logger.error(f'Program: The following error occurred.\n{exception}')
-        # デバッグ情報の追加
-        import logging
-        logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
-        logger.debug(f'Error Type: {type(exception).__name__}')
-        logger.debug(f'Error Details: {str(exception)}')
-        logger.debug('Traceback:', exc_info=True)
         sys.exit(1)
     else:
         logger.info('Program: Finished.')
@@ -121,14 +113,7 @@ def create_commandline_parser():
         help='テキスト形式のログ ファイル (*.txt) のパスです。'
              '指定しない場合は、ルート フォルダーに現在の日時 (log_<yymmdd-HHMMSS>.txt) でファイルを生成します。'
     )
-    
-    # 開始フェーズ設定
-    commandline_parser.add_argument(
-        '-p', '--phase', dest='start_phase', default=None,
-        required=False,
-        help='開始フェーズの名前です。'
-             '指定しない場合は、設定ファイルに記述されているものを使用します。'
-    )
+
     return commandline_parser
 
 
