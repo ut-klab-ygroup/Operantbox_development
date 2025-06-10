@@ -2,7 +2,7 @@ import time
 import logging
 from phases.phase import Phase
 from hardware.task_gpio import TaskGpio, LedStatus
-from middleware.operations import Operations
+from operations import Operations
 from sampler import Sampler
 
 # settings
@@ -12,6 +12,7 @@ wait_time_list = [8,7,5,2,10,2,6,7,4,5,1,3,1,10,2,3,4,2,6,10,9,6,9,3,1,5,3,9,5,2
 class Phase1(Phase):
     def __init__(self, gpio: TaskGpio, logger: logging.Logger, sampler: Sampler):
         self._gpio = gpio
+        self._operations = Operations(gpio)
         self._trial = 0
         self._logger = logger
         self._sampler = sampler
@@ -29,4 +30,4 @@ class Phase1(Phase):
             self._gpio.set_house_led(LedStatus.ON)
 
             time.sleep(wait_time_list[t % length] + wait_time_in_s)
-            Operations.give_reward(self._gpio)
+            self._operations.give_reward()

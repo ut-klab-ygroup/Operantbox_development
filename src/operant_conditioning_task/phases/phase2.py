@@ -1,7 +1,7 @@
 import time
 import logging
 from hardware.task_gpio import TaskGpio, LedStatus
-from middleware.operations import Operations
+from operations import Operations
 from phases.phase import Phase
 from sampler import Sampler
 
@@ -17,6 +17,7 @@ NP_LEDS = [OFF, ON, ON, ON, OFF]
 class Phase2(Phase):
     def __init__(self, gpio: TaskGpio, logger: logging.Logger, sampler: Sampler):
         self._gpio = gpio
+        self._operations = Operations(gpio)
         self._logger = logger
         self._sampler = sampler
         self._trial = 0
@@ -43,7 +44,7 @@ class Phase2(Phase):
         while time.time() - start_time < TRIAL_TIMEOUT:
             flag = self._gpio.get_and_clear_nose_poke_flag()
             if flag is not None:
-                Operations.give_reward(self._gpio)
+                self._operations.give_reward()
                 self._logger.debug(f"Nose poke detected ({flag})")
         
     def run_interval(self):
@@ -53,5 +54,5 @@ class Phase2(Phase):
         while time.time() - start_time < duration:
             flag = self._gpio.get_and_clear_nose_poke_flag()
             if flag is not None:
-                Operations.give_reward(self._gpio)
+                self._operations.give_reward()
                 self._logger.debug(f"Nose poke detected ({flag})")
