@@ -1,11 +1,6 @@
-import threading
+import time
 from gpiozero import LED, Button
 from enum import Enum, auto
-
-# イベント用グローバル変数
-event_licked = threading.Event()
-event_nose_poked = threading.Event()
-nose_poke_id = 0    # イベントとともに設定される
 
 # ピン配置 (GPIO番号)
 pin_assignment = {
@@ -24,6 +19,10 @@ class LedStatus(Enum):
     OFF = auto()
     BLINK = auto()
 
+# 定数
+NOSE_POKE_REFRACTORY_PERIOD = 3 # ノーズポークの不応期 (秒)
+LICK_REFRACTORY_PERIOD = 3      # リックの不応期 (秒)
+
 class TaskGpio:
     """
     Raspberry Pi の GPIO によるデジタル入出力を行う
@@ -36,16 +35,24 @@ class TaskGpio:
         self._reward_led = LED(pin_assignment['reward_led'])
         self._reward_pump = LED(pin_assignment['reward_pump'])
         
+        self._house_led_control = LED(pin_assignment['house_led_control']) # 基板のエラッタ対応用
+        self._house_led_control.on()
+        
         # 入力系
         self._lick_sensor = Button(pin_assignment['lick_sensor'], hold_time=0.5, bounce_time=0.05, active_state=True, pull_up=None)
+        self._lick_sensor.when_pressed = self._lick_handler
         self._nose_poke_sensors = [
             Button(p, hold_time=0.5, bounce_time=0.05, active_state=True, pull_up=None)
             for p in pin_assignment['nose_poke_sensors']
         ]
+        for dev in self._nose_poke_sensors:
+            dev.when_pressed = self._nose_poke_handler
 
         # その他
-        self._house_led_control = LED(pin_assignment['house_led_control']) # 基板のエラッタ対応用
-        self._house_led_control.on()
+        self._last_lick_time = 0
+        self._last_nose_poke_times = [0 for _ in range(5)]
+        self._lick_flag = False
+        self._nose_poke_flag = None
 
     # 内部処理共通化用
     def _set_led(self, device: LED, status: LedStatus) -> None:
@@ -60,13 +67,19 @@ class TaskGpio:
     # リック検出時のイベントハンドラ
     def _lick_handler(self):
         global event_licked
-        event_licked.set()
+        t = time.time()
+        if t - self._last_lick_time > LICK_REFRACTORY_PERIOD:
+            self._last_lick_time = t
+            self._lick_flag = True
 
     # ノーズポーク検出時のイベントハンドラ
-    def _nose_poke_handler(self, id: int):
-        global event_nose_poked, nose_poke_id
-        nose_poke_id = id
-        event_nose_poked.set()
+    def _nose_poke_handler(self, dev: Button):
+        global events_nose_poked
+        idx = pin_assignment['nose_poke_sensors'].index(dev.pin.number)
+        t = time.time()
+        if t - self._last_nose_poke_times[idx] > NOSE_POKE_REFRACTORY_PERIOD:
+            self._last_nose_poke_times[idx] = t
+            self._nose_poke_flag = idx
 
     def set_house_led(self, status: LedStatus) -> None:
         self._set_led(self._house_led, status)
@@ -89,6 +102,14 @@ class TaskGpio:
     
     def get_nose_poke_sensors(self) -> list[int]:
         return [p.value for p in self._nose_poke_sensors]
-
-# グローバルなインスタンス
-task_gpio = TaskGpio()
+    
+    # リックのイベントフラグを取得する. 関数を呼ぶとフラグはクリアされる.
+    def get_and_clear_lick_flag(self) -> bool:
+        flag = self._lick_flag
+        self._lick_flag = False
+        return flag
+    
+    def get_and_clear_nose_poke_flag(self) -> int | None:
+        flag = self._nose_poke_flag
+        self._nose_poke_flag = None
+        return flag

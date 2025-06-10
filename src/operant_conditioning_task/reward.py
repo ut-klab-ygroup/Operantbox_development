@@ -5,8 +5,6 @@ from task_gpio import LedStatus, task_gpio
 # 報酬を与える. ブロッキング
 def give_reward():
     task_gpio.set_reward_led(LedStatus.ON)
-    task_gpio.set_house_led(LedStatus.OFF)
-    task_gpio.set_nose_poke_leds([LedStatus.OFF] * 5)
 
     speaker.play_wav("music/6000Hz_sin_wave_96.wav")
     task_gpio.trigger_reward_pump()
