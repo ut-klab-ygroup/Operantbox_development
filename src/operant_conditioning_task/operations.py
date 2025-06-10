@@ -23,3 +23,13 @@ class Operations:
 
         # WAVファイルの停止（もし音声ファイルの再生があれば）
         speaker.stop_wav()
+
+    # リックセンサーに(新たに)反応があるまでポーリングして待機する.
+    # deadlineはtime.time()で得られる時間. deadlineを迎えた場合Trueを返す
+    def wait_lick(self, deadline: float) -> bool:
+        self._gpio.get_and_clear_lick_flag()
+        while time.time() < deadline:
+            flag = self._gpio.get_and_clear_lick_flag()
+            if flag:
+                return False
+        return True

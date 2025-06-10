@@ -5,6 +5,7 @@ import sys
 from phases.phase import Phase
 from phases.phase1 import Phase1
 from phases.phase2 import Phase2
+from phases.phase3 import Phase3
 from hardware.task_gpio import TaskGpio
 from sampler import Sampler
 import logger
@@ -12,6 +13,7 @@ import logger
 phases = {
     '1': Phase1,
     '2': Phase2,
+    '3': Phase3,
 }
 
 def main():
